@@ -1,0 +1,2 @@
+# SHU_DataBase_teamwork
+2023春季数据库2课程作业代码仓库
