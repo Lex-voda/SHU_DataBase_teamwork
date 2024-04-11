@@ -1,0 +1,32 @@
+{
+    "status": "success",
+    "total_count": 2,
+    "user_info": {
+       "id": "",
+       "name": "",    
+       "school": "",
+       "level": "",
+       "gender": "",
+       "role": "1"    
+    },
+    "course_info": [
+       {
+          "kch": "123",
+          "kcm": "sdadas",
+          "xf": "asd",
+          "jsh": "xcs",
+          "jsxm": "sad",
+          "sksj": "二9-10",
+          "zdrs": "adw"
+       },
+       {
+          "kch": "123",
+          "kcm": "sdadas",
+          "xf": "asd",
+          "jsh": "xcs",
+          "jsxm": "sad",
+          "sksj": "一7-8",
+          "zdrs": "adw"
+       }
+    ]
+ }

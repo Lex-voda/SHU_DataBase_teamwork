@@ -1,0 +1,346 @@
+.main-frame .article-box {
+    width: 84%;
+    height: 92%;
+    background-color: #eeeeee;
+    position: absolute;
+    top: 5%;
+    right: 0%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.article-item {
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.box-inquiry {
+    width: 98%;
+    height: 29%;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #000;
+    margin: 1%;
+}
+
+.box-inquiry-title {
+    width: 100%;
+    height: 20%;
+    text-align: center;
+    background-color: #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.7vw;
+}
+
+.box-inquiry-input {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: #fbf9f9;
+}
+
+.box-inquiry-input-item {
+    width: 30%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.box-inquiry-button {
+    width: 100%;
+    height: 28%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#courseInquiry {
+    width: 10vw;
+    height: 5vh;
+}
+
+.box-inquiryResult {
+    width: 98%;
+    height: 66%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #000 2px solid;
+    margin: 1%;
+}
+
+.box-inquiryResult-title {
+    width: 100%;
+    height: 7%;
+    text-align: center;
+    background-color: #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.7vw;
+}
+
+.box-inquiryResult-table {
+    width: 100%;
+    height: 93%;
+    background-color: #fbf9f9;
+}
+
+.box-inquiryResult-table table {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.box-inquiryResult-table table thead {
+    width: 100%;
+    height: 10%;
+}
+
+.box-inquiryResult-table table tbody {
+    width: 100%;
+    height: 89%;
+    overflow-y: scroll;
+}
+
+.box-inquiryResult-table table tbody::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+.box-inquiryResult-table table tr {
+    width: 100%;
+    height: 5vh;
+    display: flex;
+    background-color: #f0efef;
+    flex-direction: row;
+    justify-self: center;
+    align-items: center;
+}
+
+.box-inquiryResult-table table thead tr th,
+.box-inquiryResult-table table tbody tr td {
+    width: 16%;
+    text-align: center;
+}
+
+
+
+
+.box-currentSelected {
+    width: 98%;
+    height: 98%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #000 2px solid;
+    margin: 1%;
+}
+
+.box-currentSelected-title {
+    width: 100%;
+    height: 11%;
+    text-align: center;
+    background-color: #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.7vw;
+}
+
+.box-currentSelected-table {
+    width: 100%;
+    height: 89%;
+    background-color: #fbf9f9;
+}
+
+.box-currentSelected-table table {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.box-currentSelected-table table thead {
+    width: 100%;
+    height: 6.5%;
+}
+
+.box-currentSelected-table table tbody {
+    width: 100%;
+    height: 93.5%;
+    overflow-y: scroll;
+}
+
+.box-currentSelected-table table tbody::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+.box-currentSelected-table table tr {
+    width: 100%;
+    height: 5vh;
+    display: flex;
+    background-color: #f0efef;
+    flex-direction: row;
+    justify-self: center;
+    align-items: center;
+}
+
+.box-currentSelected-table table thead tr th,
+.box-currentSelected-table table tbody tr td {
+    width: 16%;
+    text-align: center;
+}
+
+
+
+
+.box-schedule {
+    width: 98%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #000 2px solid;
+    margin: 1%;
+}
+
+.box-schedule-title {
+    width: 100%;
+    height: 11%;
+    text-align: center;
+    background-color: #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.7vw;
+}
+
+.box-schedule-table {
+    width: 100%;
+    height: 89%;
+    background-color: #fbf9f9;
+}
+
+.box-schedule-table table {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.box-schedule-table table thead {
+    width: 100%;
+    height: 10%;
+}
+
+.box-schedule-table table tbody {
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+.box-schedule-table table tbody::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+.box-schedule-table table tr {
+    width: 100%;
+    height: 5vh;
+    display: flex;
+    background-color: #f0efef;
+    flex-direction: row;
+    justify-self: center;
+    align-items: center;
+}
+
+.box-schedule-table table thead tr th,
+.box-schedule-table table tbody tr td {
+    width: 16%;
+    text-align: center;
+}
+
+
+
+.box-scheduletable {
+    width: 98%;
+    height: 44%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: #000 2px solid;
+    margin: 1%;
+}
+
+.box-scheduletable-title {
+    width: 100%;
+    height: 11%;
+    text-align: center;
+    background-color: #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.7vw;
+}
+
+.box-scheduletable-table {
+    width: 100%;
+    height: 89%;
+    background-color: #fbf9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.box-scheduletable-table table {
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* background-color: aqua; */
+}
+
+.box-scheduletable-table table thead {
+    width: 100%;
+    height: 10%;
+}
+
+.box-scheduletable-table table tbody {
+    width: 100%;
+    height: 90%;
+}
+
+.box-scheduletable-table table tr {
+    width: 100%;
+    display: flex;
+    background-color: #f0efef;
+    flex-direction: row;
+    justify-self: center;
+    align-items: center;
+}
+
+.box-scheduletable-table table thead tr {
+    height: 3vh;
+}
+
+.box-scheduletable-table table tbody tr {
+    height: 100/12%;
+}
+
+.box-scheduletable-table table thead tr th,
+.box-scheduletable-table table tbody tr td {
+    width: 16%;
+    text-align: center;
+}

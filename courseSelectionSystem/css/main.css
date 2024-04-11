@@ -1,0 +1,160 @@
+.main-frame {
+    width: 100%;
+    height: 100%;
+    background-color: #f5f5f5;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.main-frame .nav-box {
+    width: 100%;
+    height: 5%;
+    background-color: skyblue;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+}
+
+.nav-box-ul{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    list-style: inside;
+}
+
+.main-frame .nav-box li {
+    height: 100%;
+    font-size: 1.25vw;
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    padding-top: 0.4vw;
+}
+
+.nav-question {
+    width: 14%;
+}
+
+.nav-no {
+    width: 9%;
+}
+
+.nav-logout {
+    width: 8%;
+}
+
+.main-frame .nav-box li:hover {
+    background-color: rgb(36, 181, 238);
+}
+
+.main-frame .aside-box {
+    width: 16%;
+    height: 95%;
+    background-color: #89a2f3;
+    position: absolute;
+    top: 5%;
+    left: 0%;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-frame .aside-box .aside-sinfo {
+    width: 100%;
+    height: 20%;
+    background-color: #cdd9fe;
+    font-size: 1vw;
+    color: #000;
+    text-align: start;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-frame .aside-box .aside-menu {
+    width: 100%;
+    height: 80%;
+    background-color: #222;
+    font-size: 1vw;
+    color: #fff;
+}
+
+.main-frame .aside-box .aside-menu .menu-main {
+    width: 100%;
+    height: 5%;
+    background-color: #222;
+    font-size: 1vw;
+    color: #eee;
+    text-align: start;
+}
+
+.main-frame .aside-box .aside-menu .menu-student,
+.main-frame .aside-box .aside-menu .menu-teacher,
+.main-frame .aside-box .aside-menu .menu-admin {
+    width: 100%;
+    height: 95%;
+    background-color: #333;
+    font-size: 1vw;
+    color: #eeeeee;
+    text-align: start;
+    overflow: hidden;
+}
+
+.main-frame .aside-box .aside-menu .menu-student #menu-student-title,
+.main-frame .aside-box .aside-menu .menu-teacher #menu-teacher-title,
+.main-frame .aside-box .aside-menu .menu-admin #menu-admin-title {
+    width: 100%;
+    height: 5%;
+    background-color: #333;
+    font-size: 1.15vw;
+    color: #ebebeb;
+    text-align: start;
+    cursor: pointer;
+}
+
+.main-frame .aside-box .aside-menu .menu-select {
+    width: 100%;
+    background-color: #464646;
+    font-size: 1vw;
+    line-height: 3.5vh;
+    color: #9b9b9b;
+    text-align: start;
+    display: flex;
+    flex-direction: column;
+    list-style-type: circle;
+    list-style-position: inside;
+    /* 必须inside,因为padding为0,所以边框之外什么都显示不出来 */
+}
+
+.main-frame .aside-box .aside-menu .menu-select li {
+    padding-left: 1vw;
+    /* 右移一些 */
+}
+
+.main-frame .aside-box .aside-menu .menu-select li:hover {
+    color: #fff;
+    cursor: pointer;
+}
+
+.main-frame .aside-box .aside-menu .menu-mask {
+    width: 100%;
+    height: 50%;
+    background-color: #333;
+    font-size: 1vw;
+    transition: all 0.5s;
+}
+
+
+.main-frame .footer-box {
+    width: 84%;
+    height: 3%;
+    background-color: #ffffff;
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

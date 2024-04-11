@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小选课系统，大师作</title>
+    <link rel="stylesheet" href="./css/all.css">
+    <link rel="stylesheet" href="./css/login.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/article.css">
+</head>
+
+<body>
+    <div class="login-frame">
+        <div class="login-frame-red">
+            <div class="login-box">
+                <div class="login-title">
+                    <p>登录</p>
+                    <p>您正在登录选课系统</p>
+                </div>
+                <div class="login-input">
+                    <div class="login-username">
+                        <input type="text" placeholder="请输入用户名" id="username">
+                    </div>
+                    <div class="login-password">
+                        <input type="password" placeholder="请输入密码" id="password">
+                    </div>
+                </div>
+                <div class="login-button">
+                    <button id="login-submit">登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main-frame" style="display: none;">
+        <nav class="nav-box">
+            <ul class="nav-box-ul">
+                <li class="nav-question">
+                    选课问题咨询解答
+                </li>
+                <li class="nav-no">
+                    22222222
+                </li>
+                <li class="nav-logout">
+                    安全退出
+                </li>
+            </ul>
+
+        </nav>
+        <aside class="aside-box">
+            <div class="aside-sinfo">
+                <h1>用户信息</h1>
+                <p>姓名：<span id="sname"></span></p>
+                <p>学校：<span id="sschool"></span></p>
+                <p>年级：<span id="sgrade"></span></p>
+                <p>性别：<span id="ssex"></span></p>
+                <p id="redlogout" style="cursor: pointer;color: red;"><strong>完成选课后点击【安全退出】</strong></p>
+            </div>
+            <div class="aside-menu">
+                <div class="menu-main">&ensp;主菜单</div>
+                <div class="menu-student" style="display: none;">
+                    <div id="menu-student-title">&ensp;学生用户<span
+                            style="float: right;transform: scale(1.2,0.6) translateY(1vh);">V&ensp;</span>
+                    </div>
+                    <ul class="menu-select">
+                        <li id="student-select"><a>选课课程查询</a></li>
+                        <li id="student-drop"><a>退课</a></li>
+                        <li id="student-scheduleInquiry"><a>课表查询</a></li>
+                    </ul>
+                    <div class="menu-mask"></div>
+                </div>
+                <div class="menu-teacher" style="display: none;">
+                    <div id="menu-teacher-title">&ensp;教师用户<span
+                            style="float: right;transform: scaleX(2);">V&ensp;</span>
+                    </div>
+                    <ul class="menu-select">
+                        <li id="teacher-scheduleInquiry"><a>课表查询</a></li>
+                    </ul>
+                    <div class="menu-mask"></div>
+                </div>
+                <div class="menu-admin" style="display:none;">
+                    <div id="menu-admin-title">&ensp;管理员用户<span
+                            style="float: right;transform: scaleX(2);">V&ensp;</span>
+                    </div>
+                    <ul class="menu-select">
+                        <li id="admin-enroll"><a>选课课程查询</a></li>
+                        <li id="admin-drop"><a>删课</a></li>
+                        <li id="admin-schedule"><a>查询课表</a></li>
+                    </ul>
+                    <div class="menu-mask"></div>
+                </div>
+            </div>
+        </aside>
+        <article class="article-box">
+            <div class="article-item">
+                <div class="box-inquiry">
+                    <div class="box-inquiry-title">
+                        <p>课程查询</p>
+                    </div>
+                    <div class="box-inquiry-input">
+                        <div class="box-inquiry-input-item">
+                            <p>课程号：</p>
+                            <input type="text" id="courseNo">
+                        </div>
+                        <div class="box-inquiry-input-item">
+                            <p>课程名：</p>
+                            <input type="text" id="courseName">
+                        </div>
+                        <div class="box-inquiry-input-item">
+                            <p>学分：</p>
+                            <input type="text" id="courseCredit">
+                        </div>
+                        <div class="box-inquiry-input-item">
+                            <p>教师号：</p>
+                            <input type="text" id="teacherNo">
+                        </div>
+                        <div class="box-inquiry-input-item">
+                            <p>教师名：</p>
+                            <input type="text" id="teacherName">
+                        </div>
+                        <div class="box-inquiry-input-item">
+                            <p>上课时间：</p>
+                            <input type="text" id="courseTime">
+                        </div>
+                    </div>
+                    <div class="box-inquiry-button">
+                        <div><button id="courseInquiry">查询</button></div>
+                    </div>
+                </div>
+                <div class="box-inquiryResult">
+                    <div class="box-inquiryResult-title">
+                        <p>查询结果</p>
+                    </div>
+                    <div class="box-inquiryResult-table">
+                        <table>
+                            <thead>
+                                <tr id="inquiryTableTheadTr">
+                                    <th>课程号</th>
+                                    <th>课程名</th>
+                                    <th>学分</th>
+                                    <th>教师号</th>
+                                    <th>教师名</th>
+                                    <th>上课时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="courseInquiryResult">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="article-item">
+                <div class="box-currentSelected">
+                    <div class="box-currentSelected-title">
+                        <p>当前选课</p>
+                    </div>
+                    <div class="box-currentSelected-table">
+                        <table>
+                            <thead>
+                                <tr id="dropTableTheadTr">
+                                    <th>课程号</th>
+                                    <th>课程名</th>
+                                    <th>学分</th>
+                                    <th>教师号</th>
+                                    <th>教师名</th>
+                                    <th>上课时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="currentSelectedResult">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="article-item">
+                <div class="box-schedule">
+                    <div class="box-schedule-title">
+                        <p>当前选课</p>
+                    </div>
+                    <div class="box-schedule-table">
+                        <table>
+                            <thead>
+                                <tr id="scheduleTableTheadTr">
+                                    <th>序号</th>
+                                    <th>课程号</th>
+                                    <th>课程名</th>
+                                    <th>学分</th>
+                                    <th>教师号</th>
+                                    <th>教师名</th>
+                                    <th>上课时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="currentSelectedResult2">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="box-scheduletable">
+                    <div class="box-scheduletable-title">
+                        <p>课程表</p>
+                    </div>
+                    <div class="box-scheduletable-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>星期一</th>
+                                    <th>星期二</th>
+                                    <th>星期三</th>
+                                    <th>星期四</th>
+                                    <th>星期五</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduletable">
+                                <tr>
+                                    <td>1</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>8</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                    <td class="schedule-item"></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <footer class="footer-box">
+            <div class="footer-text">
+                <p>技术支持：第八组</p>
+            </div>
+        </footer>
+    </div>
+</body>
+<script src="./js/main.js"></script>
+
+</html>
