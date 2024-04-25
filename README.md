@@ -24,23 +24,25 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ### 数据库
 
-| 表          | 属性集                              | 描述           |
-| ----------- | ----------------------------------- | -------------- |
-| College     | {Cono,Cname}                        | 学院信息       |
-| Admin       | {Ano,Akey}                          | 管理员信息     |
-| Teacher     | {Tno,Tkey,Tname}                    | 教师信息       |
-| Student     | {Sno,Skey,Sname,Grade}              | 学生信息       |
-| Course      | {Cno,Cname,Credit,Ctno,Tname,Ctime} | 课程信息       |
-| Scredit     | {}                                  | 学分完成情况   |
-| Tcredit     | {}                                  | 教分完成情况   |
-| Project     | {Pno,Pname,Puno,Psname,Pstatus,}    | 项目情况       |
-| Classroom   | {}                                  | 教室使用情况   |
-| Meetingroom | {}                                  | 会议室预约情况 |
+| 表          | 属性集                          | 描述           |
+| ----------- | ------------------------------- | -------------- |
+| College     | {Cono,Cname}                    | 学院信息       |
+| Admin       | {Ano,Akey}                      | 管理员信息     |
+| Teacher     | {Tno,Tkey,Tname}                | 教师信息       |
+| Student     | {Sno,Skey,Sname,Grade}          | 学生信息       |
+| Course      | {Cno,Cname,Credit,Ctno,Tname}   | 课程信息       |
+| Scredit     | {Sno,Cno,Pass}                  | 学分完成情况   |
+| Tcredit     | {Tno,Cno}                       | 教分完成情况   |
+| Project     | {Pno,Pname,Puno,Psname,Pstatus} | 项目情况       |
+| ClassRoom   | {CRno,Cno,Ctno,CRtime}          | 教室安排信息   |
+| MeetingRoom | {MRno,Uno,MRtime}               | 会议室预约情况 |
 
 备注：
 
-- `uno` 代表此熟悉可能是 `sno` 或 `tno`
-- `Pstatus` ：0-队员，1-队长，2-指导老师
+- `uno` 代表此属性可能是 `sno` 或 `tno`
+- 课程表中的 `Ctno` 是相对教师号，格式`1001`
+- 项目表中的 `Pstatus` ：0-队员，1-队长，2-指导老师
+- 课程表中没有上课地点和时间的信息，结合教室表才是完整的课程表，`CRtime`和`MRtime`的格式是`四1-2`
 - 所有属性都是字符串
 
 ### 界面与功能
@@ -196,7 +198,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 通信字典：
 
-```json
+```json 
 {
  "Info":{
  		"Pname":"", ->str
@@ -214,9 +216,96 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ##### 教室使用查询
 
+前端：
 
+- 传输 `CRno|CRtime|Cno|Ctno` 和 `RequestHeader` 进行查询
+- 得到信息后展示表项
+
+后端：
+
+- 根据 `CRno|CRtime|Cno|Ctno` 返回 `ClassRoom` 表项中的信息
+
+- 日志记录
+
+日志：
+
+```
+--Inquire--RequestHeader:{RequestHeader},Table:"ClassRoom",Keywords:{Keywords}
+```
+
+通信字典：
+
+```json
+{
+ "Keywords":"" ->str,
+ "RequestHeader":"" ->str,
+ "ClassRoom":[] ->list(dic(ClassRoom))
+}
+```
 
 ##### 会议室预约
+
+前端：
+
+- 信息展示与查询
+
+  - 进入本页面后自动：传输 ` 空查询` 和 `RequestHeader` 进行查询
+
+  - 得到信息后展示表项
+
+- 预约
+
+  - 输入`MRtime`进行预约，使用控件选择 `MRno` ，自动传输 `Uno`
+  - 显示预约成功或失败信息
+
+后端：
+
+- 信息展示与查询
+
+  - 根据 `MRno|MRtime|Uno` 返回 `MeetingRoom` 表项中的信息
+
+
+  - 日志记录
+
+日志：
+
+```
+--Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoom",Keywords:{Keywords}
+```
+
+通信字典：
+
+```json
+{
+ "Keywords":"" ->str,
+ "RequestHeader":"" ->str,
+ "MeetingRoom":[] ->list(dic(MeetingRoom))
+}
+```
+
+- 预约
+  - 根据 `MRno+MRtime+Uno` 对 `MeetingRoom` 表进行注入，同时判断合法性
+  - 日志记录
+
+日志：
+
+```
+--Insert--RequestHeader:{RequestHeader},Table:"MeetingRoom",Info:{Info}
+```
+
+通信字典：
+
+```json
+{
+ "Info":{
+     	"MRno":"", ->str
+        "MRtime":"", ->str
+        "Uno":"" ->str
+ 		} ->dic,
+ "RequestHeader":"", ->str
+ "flag":"" ->str{"0"|"1"}
+}
+```
 
 
 
