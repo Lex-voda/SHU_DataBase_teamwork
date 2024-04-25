@@ -67,6 +67,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 数据库只储存哈希后的密码
 
+函数路由：`Login`
+
 日志：
 
 ```
@@ -109,6 +111,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `Uno` 返回 `Scredit` 表项中的信息
 - 日志记录
 
+函数路由：`Scredict_Inquire`
+
 日志：
 
 ```
@@ -136,6 +140,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 根据 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 返回 `Course` 表项中的信息
 - 日志记录
+
+函数路由：`Course_Inquire`
 
 日志：
 
@@ -172,6 +178,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
   - 日志记录
 
+函数路由：`Project_Inquire`
+
 日志：
 
 ```
@@ -191,6 +199,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 申报
   - 根据 `Info` 对 `Project`  表进行注入
   - 日志记录
+
+函数路由：`Project_Insert`
 
 日志：
 
@@ -228,6 +238,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `CRno|CRtime|Cno|Ctno` 返回 `ClassRoom` 表项中的信息
 
 - 日志记录
+
+函数路由：`ClassRoom_Inquire`
 
 日志：
 
@@ -269,6 +281,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
   - 日志记录
 
+函数路由：`MeetingRoom_Inquire`
+
 日志：
 
 ```
@@ -288,6 +302,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 预约
   - 根据 `MRno+MRtime+Uno` 对 `MeetingRoom` 表进行注入，同时判断合法性
   - 日志记录
+
+函数路由：`MeetingRoom_Insert`
 
 日志：
 
