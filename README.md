@@ -9,11 +9,14 @@
 YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头的最后四位)
 ```
 
+后文在表之间使用 `|` 表示自然连接 $\Join$
+
 #### 文档日志写前面
 
 ```
 2024/4/16：数据库；界面与功能-登录界面
 2024/4/24：界面与功能-初始界面；界面与功能-学生端功能界面
+2024/5/4：更新了数据库设计，完善了外键不是主键的问题
 ```
 
 
@@ -24,18 +27,18 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ### 数据库
 
-| 表          | 属性集                          | 描述           |
-| ----------- | ------------------------------- | -------------- |
-| College     | {Cono,Cname}                    | 学院信息       |
-| Admin       | {Ano,Akey}                      | 管理员信息     |
-| Teacher     | {Tno,Tkey,Tname}                | 教师信息       |
-| Student     | {Sno,Skey,Sname,Grade}          | 学生信息       |
-| Course      | {Cno,Cname,Credit,Ctno,Tname}   | 课程信息       |
-| Scredit     | {Sno,Cno,Pass}                  | 学分完成情况   |
-| Tcredit     | {Tno,Cno}                       | 教分完成情况   |
-| Project     | {Pno,Pname,Puno,Psname,Pstatus} | 项目情况       |
-| ClassRoom   | {CRno,Cno,Ctno,CRtime}          | 教室安排信息   |
-| MeetingRoom | {MRno,Uno,MRtime}               | 会议室预约情况 |
+| 表          | 属性集                      | 描述           |
+| ----------- | --------------------------- | -------------- |
+| College     | {Cono,Cname}                | 学院信息       |
+| Admin       | {Ano,Akey}                  | 管理员信息     |
+| Teacher     | {Tno,Tkey,Tname}            | 教师信息       |
+| Student     | {Sno,Skey,Sname,Grade}      | 学生信息       |
+| Course      | {Cno,Cname,Credit,Ctno,Tno} | 课程信息       |
+| Scredit     | {Sno,Cno,Pass}              | 学分完成情况   |
+| Tcredit     | {Tno,Cno}                   | 教分完成情况   |
+| Project     | {Pno,Pname,Puno,Pstatus}    | 项目情况       |
+| ClassRoom   | {CRno,Cno,Ctno,CRtime}      | 教室安排信息   |
+| MeetingRoom | {MRno,Uno,MRtime}           | 会议室预约情况 |
 
 备注：
 
@@ -138,7 +141,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 后端：
 
-- 根据 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 返回 `Course` 表项中的信息
+- 根据 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 返回 `Course|Teacher` 表项中的信息
 - 日志记录
 
 函数路由：`Course_Inquire`
@@ -146,7 +149,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Course",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"Course|Teacher",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -215,8 +218,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  "Info":{
  		"Pname":"", ->str
  		"Pmember":[
- 					{"name":"", ->str
- 					 "no":"", ->str
+ 					{"no":"", ->str
  					 "status":"", ->str{"0"|"1"|"2"}
  					}
  				  ]	->list(dic)
