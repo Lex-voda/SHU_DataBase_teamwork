@@ -16,7 +16,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```
 2024/4/16：数据库；界面与功能-登录界面
 2024/4/24：界面与功能-初始界面；界面与功能-学生端功能界面
-2024/5/4：更新了数据库设计，完善了外键不是主键的问题
+2024/5/4：更新了数据库设计，完善了外键不是主键的问题；更新了查询的通信字典；修改了请求头的存储位置为Header属性
 ```
 
 
@@ -126,9 +126,10 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ```json
 {
- "Keywords":"" ->str(Uno),
- "RequestHeader":"" ->str,
- "Scredit":[] ->list(dic(Scredit))
+ "Keywords":{
+     		"Uno":"" ->str
+ 			} ->dict,
+ "Scredit":[] ->list(dict(Scredit))
 }
 ```
 
@@ -156,9 +157,15 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ```json
 {
- "Keywords":"" ->str,
- "RequestHeader":"" ->str,
- "Course":[] ->list(dic(Course))
+ "Keywords":{
+     		"Cno":"" ->str,
+     		"Cname":"" ->str,
+     		"Credit":"" ->str,
+     		"Ctno":"" ->str,
+     		"Tname":"" ->str,
+     		"Ctime":"" ->str
+ 			} ->dict,
+ "Course":[] ->list(dict(Course))
 }
 ```
 
@@ -193,9 +200,10 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ```json
 {
- "Keywords":"" ->str,
- "RequestHeader":"" ->str,
- "Project":[] ->list(dic(Project))
+ "Keywords":{
+     		"Sno":"" ->str
+ 			} ->dict,
+ "Project":[] ->list(dict(Project))
 }
 ```
 
@@ -221,8 +229,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  					{"no":"", ->str
  					 "status":"", ->str{"0"|"1"|"2"}
  					}
- 				  ]	->list(dic)
- 		}, ->dic
+ 				  ]	->list(dict)
+ 		}, ->dict
  "RequestHeader":"" ->str,
  "flag":"" ->str{"0"|"1"}
 }
@@ -253,9 +261,13 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ```json
 {
- "Keywords":"" ->str,
- "RequestHeader":"" ->str,
- "ClassRoom":[] ->list(dic(ClassRoom))
+  "Keywords":{
+     		"CRno":"" ->str,
+     		"CRtime":"" ->str,
+     		"Cno":"" ->str,
+     		"Ctno":"" ->str,
+ 			} ->dict,
+ "ClassRoom":[] ->list(dict(ClassRoom))
 }
 ```
 
@@ -295,9 +307,12 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ```json
 {
- "Keywords":"" ->str,
- "RequestHeader":"" ->str,
- "MeetingRoom":[] ->list(dic(MeetingRoom))
+ "Keywords":{
+     		"MRno":"" ->str,
+     		"MRtime":"" ->str,
+     		"Uno":"" ->str
+ 			} ->dict,
+ "MeetingRoom":[] ->list(dict(MeetingRoom))
 }
 ```
 
@@ -321,7 +336,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      	"MRno":"", ->str
         "MRtime":"", ->str
         "Uno":"" ->str
- 		} ->dic,
+ 		} ->dict,
  "RequestHeader":"", ->str
  "flag":"" ->str{"0"|"1"}
 }
