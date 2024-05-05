@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { EyeFilledIcon } from './components/EyeFilledIcon';
 import { EyeSlashFilledIcon } from './components/EyeSlashFilledIcon';
 import { useRouter } from 'next/navigation';
+import { error } from '../utils/message';
 
 const Login = () => {
   const [password, setPassword] = useState('');
@@ -27,15 +28,25 @@ const Login = () => {
 
   const login = useCallback(async () => {
     if (!username || !password) {
-      console.log('Username or password is empty.');
+      error('ID or password is empty.');
+      console.log('ID or password is empty.');
       return;
     }
     try {
       setIsLoading(true);
       let response=await signInClicked(username, password);
       setIsLoading(false);
-      if(response==='success'){
-        router.push('/main')
+      if(response==='S'){
+        router.push('/student')
+      }
+      else if(response==='T'){
+        router.push('/teacher')
+      }
+      else if(response==='A'){
+        router.push('/admin')
+      }
+      else{
+        console.log('Login failed.');
       }
     } catch (error) {
       console.log(error);
@@ -48,12 +59,12 @@ const Login = () => {
         <CardBody className="gap-5 overflow-hidden">
           
             <div key="login" title="Login">
-              <div className='mb-8 text-center font-bold text-[#5c5c5c]'>欢迎登录旅行物语审核网站</div>
+              <div className='mb-8 text-center font-bold text-[#5c5c5c]'>欢迎登录教务管理系统</div>
               <form className="flex flex-col gap-4">
                 <Input
                   isRequired
                   label="Username"
-                  placeholder="Enter your username"
+                  placeholder="Enter your ID"
                   type="text"
                   onValueChange={setUsername}
                 />
@@ -84,7 +95,7 @@ const Login = () => {
                     onClick={login}
                     isLoading={isLoading}
                   >
-                    Login
+                    登录
                   </Button>
                 </div>
               </form>

@@ -138,7 +138,7 @@ export default function App() {
           if (res.status === 200) {
             if (res.data.status === 200) {
               if (res.data.freshToken)
-                localStorage.setItem("xcAuthorization", res.data.freshToken);
+                localStorage.setItem("dbAuthorization", res.data.freshToken);
               success("增加审核人员列表成功");
             } else {
               error("增加审核人员列表失败！");
@@ -147,8 +147,8 @@ export default function App() {
                 if (res.data?.msg === 'Authentication expires.') {
                   error("登录已过期，请重新登录！");
                   if (process.env.NEXT_PUBLIC_TEST !== "test") {
-                    localStorage.removeItem("xcuserInfo");
-                    localStorage.removeItem("xcAuthorization");
+                    localStorage.removeItem("dbuserInfo");
+                    localStorage.removeItem("dbAuthorization");
                   }
                   window.location.href = "/login";
                 }
@@ -199,7 +199,7 @@ export default function App() {
           if (res.status === 200) {
             if (res.data.status === 200) {
               if (res.data.freshToken)
-                localStorage.setItem("xcAuthorization", res.data.freshToken);
+                localStorage.setItem("dbAuthorization", res.data.freshToken);
               success("删除审核人员列表成功");
             } else {
               error("删除审核人员列表失败！");
@@ -208,8 +208,8 @@ export default function App() {
                 if (res.data?.msg === 'Authentication expires.') {
                   error("登录已过期，请重新登录！");
                   if (process.env.NEXT_PUBLIC_TEST !== "test") {
-                    localStorage.removeItem("xcuserInfo");
-                    localStorage.removeItem("xcAuthorization");
+                    localStorage.removeItem("dbuserInfo");
+                    localStorage.removeItem("dbAuthorization");
                   }
                   window.location.href = "/login";
                 }

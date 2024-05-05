@@ -1,105 +1,169 @@
 import { type AxiosResponse } from "axios";
 import instance from "./request";
 
-interface commonRes {
-  status: number;
-  freshToken?: string;
-  msg?: string;
+interface getScreditRes {
+  Scredit: Array<{
+    Sno: string;
+    Cno: string;
+    Pass: '0' | '1';
+  }>
 }
 
-interface getNoteInfoRes {
-  status: number;
-  freshToken?: string;
-  content?: {
-    noteTitle: string;
-    noteContent: string;
-    authorNickname: string;
-    lastModifyTime: string; //TODO:questioned
-    location: string;
-    status: "waiting" | "approved" | "disapproved" | "delete";
-    resources: Array<{ mediaType: "img" | "video"; url: string }>;
-  };
-  msg?: string;
+interface getCourseReq {
+  KeyWords: {
+    Cno: string;
+    Cname: string;
+    Credit: string;
+    Ctno: string;
+    Tname: string;
+    Ctime: string;
+  }
 }
 
-interface approveNoteReq {
-  noteId: Array<number>;
-  action: "approve" | "disapprove" | "delete" | "restore";
-  comment: string;
+interface getCourseRes {
+  Course: Array<{
+    Cno: string;
+    Cname: string;
+    Credit: string;
+    Ctno: string;
+    Ctime: string;
+    Tname: string;
+  }>
 }
 
-interface getNoteListRes {
-  status: number;
-  freshToken?: string;
-  noteList?: Array<{
-    noteId: number;
-    title: string;
-    coverImg: string;
-    authorNickname: string;
-    authorAvatar: string;
-    status: "waiting" | "approved" | "disapproved" | "delete";
-    uploadTime: string; //TODO:questioned
-  }>;
-  msg?: string;
+interface getProjectRes {
+  Project: Array<
+    {
+      Pno: string;
+      Pname: string;
+      Sno: string;
+      Sname: string;
+      Tno: string;
+      Tname: string;
+    }
+  >,
+  ProjMen: Array<
+    Array<
+      {
+        Sno: string;
+        Sname: string;
+      }
+    >
+  >
 }
 
-const CheckServiceApi = {
-  getNoteInfo: async (noteId: number) =>
-    await instance.get<any, AxiosResponse<Partial<getNoteInfoRes>>>(
-      "/getNoteInfo",
+interface postProjectReq {
+  Info: {
+    Pname: string;
+    PSno: Array<string>;
+    PTno: string;
+  }
+}
+
+interface postProjectRes {
+  flag: '1' | '0';
+}
+
+interface getClassRoomReq {
+  KeyWords: {
+    CRno: string;
+    Cno: string;
+    Ctno: string;
+    CRtime: string;
+  }
+}
+
+interface getClassRoomRes {
+  ClassRoom: Array<{
+    CRno: string;
+    Cname: string;
+    Cno: string;
+    Ctno: string;
+    CRtime: string;
+    Tname: string;
+  }>
+}
+
+interface getMeetingRoomReq {
+  KeyWords: {
+    MRno: string;
+    MRtime: string;
+  }
+}
+
+interface getMeetingRoomRes {
+  MeetingRoom: Array<{
+    MRno: string;
+    MRtime: string;
+  }>
+}
+
+interface postMeetingRoomReq {
+  Info: {
+    MRno: string;
+    MRtime: string;
+    Sno: string;
+  }
+}
+
+interface postMeetingRoomRes {
+  flag: '1' | '0';
+}
+
+const StudentServiceApi = {
+  getScredit: async (Uno: string) =>
+    await instance.get<any, AxiosResponse<Partial<getScreditRes>>>(
+      "/Scredit_Inquire",
       {
         params: {
-          noteId: noteId,
+          Uno: Uno,
         },
       }
     ),
-  approveNote: async (data: Partial<approveNoteReq>) =>
-    await instance.post<approveNoteReq, AxiosResponse<Partial<commonRes>>>(
-      "/approveNote",
+  getCourse: async (data: Partial<getCourseReq>) =>
+    await instance.post<getCourseReq, AxiosResponse<Partial<getCourseRes>>>(
+      "/Course_Inquire",
       data
     ),
-  getNoteList: async () =>
-    await instance.get<any, AxiosResponse<Partial<getNoteListRes>>>(
-      "/getNoteList"
+  getProject: async (Sno: string) =>
+    await instance.get<any, AxiosResponse<Partial<getProjectRes>>>(
+      "/Project_Inquire",
+      {
+        params: {
+          Sno: Sno,
+        },
+      }
     ),
-};
-
-interface getReviewerListRes {
-  status: number;
-  freshToken?: string;
-  reviewerList?: Array<{ reviewerId: number; username: string }>;
-  msg?: string;
-}
-
-interface registerReviewerReq {
-  username: string;
-  password: string;
-}
-
-interface deleteReviewerReq {
-  reviewerId: Array<number>;
-}
-
-const AuthyServiceApi = {
-  getReviewerList: async () =>
-    await instance.get<any, AxiosResponse<Partial<getReviewerListRes>>>(
-      "/getReviewerList"
-    ),
-  registerReviewer: async (data: Partial<registerReviewerReq>) =>
-    await instance.post<registerReviewerReq, AxiosResponse<Partial<commonRes>>>(
-      "/registerReviewer",
+  postProject: async (data: Partial<postProjectReq>) =>
+    await instance.post<postProjectReq, AxiosResponse<Partial<postProjectRes>>>(
+      "/Project_Insert",
       data
     ),
-  deleteReviewer: async (data: Partial<deleteReviewerReq>) =>
-    await instance.post<deleteReviewerReq, AxiosResponse<Partial<commonRes>>>(
-      "/deleteReviewer",
+  getClassRoom: async (data: Partial<getClassRoomReq>) =>
+    await instance.post<getClassRoomReq, AxiosResponse<Partial<getClassRoomRes>>>(
+      "/ClassRoom_Inquire",
+      data
+    ),
+  getMeetingRoom: async (data: Partial<getMeetingRoomReq>) =>
+    await instance.post<getMeetingRoomReq, AxiosResponse<Partial<getMeetingRoomRes>>>(
+      "/MeetingRoom_Inquire",
+      data
+    ),
+  postMeetingRoom: async (data: Partial<postMeetingRoomReq>) =>
+    await instance.post<postMeetingRoomReq, AxiosResponse<Partial<postMeetingRoomRes>>>(
+      "/MeetingRoomS_Inser_S",
       data
     ),
 };
+
+const TeacherServiceApi = {};
+
+const AdminServiceApi = {};
 
 const API = {
-  CheckServiceApi,
-  AuthyServiceApi,
+  StudentServiceApi,
+  TeacherServiceApi,
+  AdminServiceApi,
 };
 
 export default API;
