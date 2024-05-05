@@ -22,6 +22,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 		   更新了查询的通信字典
 		   修改了请求头的存储位置为Header属性
 		   完成了界面与功能部分的全部文档
+2024/5/5： 更新了数据库的表，增加ProjMem维护项目队员名单
 ```
 
 
@@ -43,9 +44,10 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 | Course      | {Cno,Cname,Credit,Ctno,Tno}          | 课程信息       |
 | Scredit     | {Sno,Cno,Pass}                       | 学分完成情况   |
 | Tcredit     | {Tno,Cno}                            | 教分完成情况   |
-| Project     | {Pno,Pname,Puno,Pstatus}             | 项目情况       |
+| Project     | {Pno,Pname,Sno,Tno}                  | 项目情况       |
+| ProjMem     | {Pno,Sno}                            | 项目队员表     |
 | ClassRoom   | {CRno,Cno,Ctno,CRtime}               | 教室安排信息   |
-| MeetingRoom | {MRno,Uno,MRtime}                    | 会议室预约情况 |
+| MeetingRoom | {MRno,Sno,MRtime}                    | 会议室预约情况 |
 
 备注：
 
@@ -94,11 +96,11 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 ```json
 { 
- "Uno":"" ->str,
- "Key":"" ->str,
- "statue":"" ->str:{"A"|"T"|"S"},
+ "Uno":"" ,
+ "Key":"" ,
+ "status":"" :{"A"|"T"|"S"},
  "flag": ->bool,
- "RequestHeader":""->str:[SHA256(Uno+Key+Time)]
+ "RequestHeader":"":[SHA256(Uno+Key+Time)]
 }
 ```
 
@@ -123,15 +125,15 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 后端：
 
-- 根据 `Uno` 返回 `Scredit` 表项中的信息
+- 根据 `Uno` 返回 `Scredit|Course` 表项中的信息（注：在 `Scredit` 标记为 `Pass=="0"` 的课程学分应0）
 - 日志记录
 
-函数路由：`Scredict_Inquire`
+函数路由：`Scredict_Inquire[GET]`
 
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Scredit",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"Scredit|Course",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -139,9 +141,15 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Uno":"" ->str
- 			} ->dict,
- "Scredit":[] ->list(dict(Scredit))
+     		"Uno":"" 
+ 			}
+ "Scredit":[
+    		{
+             "Cno":"",
+             "Cname":"",
+             "Credit":""
+            } 
+ 			]
 }
 ```
 
@@ -157,7 +165,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 返回 `Course|Teacher` 表项中的信息
 - 日志记录
 
-函数路由：`Course_Inquire`
+函数路由：`Course_Inquire[POST]`
 
 日志：
 
@@ -170,14 +178,22 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Cno":"" ->str,
-     		"Cname":"" ->str,
-     		"Credit":"" ->str,
-     		"Ctno":"" ->str,
-     		"Tname":"" ->str,
-     		"Ctime":"" ->str
- 			} ->dict,
- "Course":[] ->list(dict(Course|Teacher))
+     		"Cno":"" ,
+     		"Cname":"" ,
+     		"Credit":"" ,
+     		"Ctno":"" ,
+     		"Tname":"" ,
+     		"Ctime":"" 
+ 			},
+ "Course":[{
+    		"Cno":"",
+     		"Cname":"" ,
+     		"Credit":"" ,
+     		"Ctno":"" ,
+     		"Tname":"" ,
+     		"Ctime":"" 
+			}	
+ 		   ]
 }
 ```
 
@@ -200,7 +216,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
   - 日志记录
 
-函数路由：`Project_Inquire`
+函数路由：`Project_Inquire[POST]`
 
 日志：
 
@@ -213,9 +229,16 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Sno":"" ->str
- 			} ->dict,
- "Project":[] ->list(dict(Project))
+     		"Sno":"" 
+ 			},
+ "Project":[
+     		{
+             "Pno":"",
+             "Pname":"",
+             "Puno":"",
+             "Pstatus":""
+            }
+ 		   ]
 }
 ```
 
@@ -223,7 +246,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
   - 根据 `Info` 对 `Project`  表进行注入
   - 日志记录
 
-函数路由：`Project_Insert`
+函数路由：`Project_Insert[GET]`
 
 日志：
 
@@ -236,15 +259,14 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json 
 {
  "Info":{
- 		"Pname":"", ->str
+ 		"Pname":"", 
  		"Pmember":[
- 					{"no":"", ->str
- 					 "status":"", ->str{"0"|"1"|"2"}
+ 					{"no":"", 
+ 					 "status":"", {"0"|"1"|"2"}
  					}
- 				  ]	->list(dict)
- 		}, ->dict
- "RequestHeader":"" ->str,
- "flag":"" ->str{"0"|"1"}
+ 				  ]
+ 		},
+ "flag":"" {"0"|"1"}
 }
 ```
 
@@ -261,12 +283,12 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 日志记录
 
-函数路由：`ClassRoom_Inquire`
+函数路由：`ClassRoom_Inquire[POST]`
 
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"ClassRoom",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"ClassRoom|Teacher|Course",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -274,12 +296,21 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
   "Keywords":{
-     		"CRno":"" ->str,
-     		"CRtime":"" ->str,
-     		"Cno":"" ->str,
-     		"Ctno":"" ->str,
+     		"CRno":"" ,
+     		"CRtime":"" ,
+     		"Cno":"" ,
+     		"Ctno":"" ,
  			} ->dict,
- "ClassRoom":[] ->list(dict(ClassRoom))
+ "ClassRoom":[
+     		{
+            "CRno":"" ,
+     		"CRtime":"" ,
+     		"Cno":"" ,
+            "Cname":"" ,
+     		"Ctno":"",
+            "Tname":""
+       	 	}
+			]
 }
 ```
 
@@ -308,7 +339,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
   - 日志记录
 
-函数路由：`MeetingRoom_Inquire`
+函数路由：`MeetingRoom_Inquire[POST]`
 
 日志：
 
@@ -321,9 +352,9 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"MRno":"" ->str,
-     		"MRtime":"" ->str,
-     		"Uno":"" ->str
+     		"MRno":"" ,
+     		"MRtime":"" ,
+     		"Uno":"" 
  			} ->dict,
  "MeetingRoom":[] ->list(dict(MeetingRoom))
 }
@@ -333,7 +364,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
   - 根据 `MRno+MRtime+Uno` 对 `MeetingRoom` 表进行注入，同时判断合法性
   - 日志记录
 
-函数路由：`MeetingRoom_Insert`
+函数路由：`MeetingRoom_Insert[POST]`
 
 日志：
 
@@ -346,12 +377,11 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Info":{
-     	"MRno":"", ->str
-        "MRtime":"", ->str
-        "Uno":"" ->str
+     	"MRno":"", 
+        "MRtime":"", 
+        "Uno":"" 
  		} ->dict,
- "RequestHeader":"", ->str
- "flag":"" ->str{"0"|"1"}
+ "flag":"" {"0"|"1"}
 }
 ```
 
@@ -369,7 +399,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `Uno` 返回 `Tcredit` 表项中的信息
 - 日志记录
 
-函数路由：`Tcredict_Inquire`
+函数路由：`Tcredict_Inquire[GET]`
 
 日志：
 
@@ -382,7 +412,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Uno":"" ->str
+     		"Uno":"" 
  			} ->dict,
  "Scredit":[] ->list(dict(Scredit))
 }
@@ -400,7 +430,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 返回 `Course|Teacher` 表项中的信息
 - 日志记录
 
-函数路由：`Course_Inquire`
+函数路由：`Course_Inquire[POST]`
 
 日志：
 
@@ -413,12 +443,12 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Cno":"" ->str,
-     		"Cname":"" ->str,
-     		"Credit":"" ->str,
-     		"Ctno":"" ->str,
-     		"Tname":"" ->str,
-     		"Ctime":"" ->str
+     		"Cno":"" ,
+     		"Cname":"" ,
+     		"Credit":"" ,
+     		"Ctno":"" ,
+     		"Tname":"" ,
+     		"Ctime":"" 
  			} ->dict,
  "Course":[] ->list(dict(Course))
 }
@@ -437,7 +467,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 日志记录
 
-函数路由：`Project_Inquire`
+函数路由：`Project_Inquire[POST]`
 
 日志：
 
@@ -450,7 +480,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Sno":"" ->str
+     		"Sno":"" 
  			} ->dict,
  "Project":[] ->list(dict(Project))
 }
@@ -469,7 +499,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 日志记录
 
-函数路由：`ClassRoom_Inquire`
+函数路由：`ClassRoom_Inquire[POST]`
 
 日志：
 
@@ -482,10 +512,10 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
   "Keywords":{
-     		"CRno":"" ->str,
-     		"CRtime":"" ->str,
-     		"Cno":"" ->str,
-     		"Ctno":"" ->str,
+     		"CRno":"" ,
+     		"CRtime":"" ,
+     		"Cno":"" ,
+     		"Ctno":"" ,
  			} ->dict,
  "ClassRoom":[] ->list(dict(ClassRoom))
 }
@@ -517,7 +547,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
   - 日志记录
 
-函数路由：`MeetingRoom_Inquire`
+函数路由：`MeetingRoom_Inquire[POST]`
 
 日志：
 
@@ -530,9 +560,9 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"MRno":"" ->str,
-     		"MRtime":"" ->str,
-     		"Uno":"" ->str
+     		"MRno":"" ,
+     		"MRtime":"" ,
+     		"Uno":"" 
  			} ->dict,
  "MeetingRoom":[] ->list(dict(MeetingRoom))
 }
@@ -542,7 +572,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
   - 根据 `MRno+MRtime+Uno` 对 `MeetingRoom` 表进行注入，同时判断合法性
   - 日志记录
 
-函数路由：`MeetingRoom_Insert`
+函数路由：`MeetingRoom_Insert[POST]`
 
 日志：
 
@@ -555,11 +585,11 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Info":{
-     	"MRno":"", ->str
-        "MRtime":"", ->str
-        "Uno":"" ->str
+     	"MRno":"", 
+        "MRtime":"", 
+        "Uno":"" 
  		} ->dict,
- "flag":"" ->str{"0"|"1"}
+ "flag":"" {"0"|"1"}
 }
 ```
 
@@ -577,7 +607,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `Sno` 返回 `Student|College` 表项中的信息
 - 日志记录
 
-函数路由：`Student_Inquire`
+函数路由：`Student_Inquire[POST]`
 
 日志：
 
@@ -590,11 +620,11 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Sno":"" ->str,
-     		"Sname":"" ->str,
-     		"Grade":"" ->str,
-     		"Sgender":"" ->str,
-     		"Cono":"" ->str
+     		"Sno":"" ,
+     		"Sname":"" ,
+     		"Grade":"" ,
+     		"Sgender":"" ,
+     		"Cono":"" 
  			} ->dict,
  "Scredit":[] ->list(dict(Student|College))
 }
@@ -612,7 +642,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `Sno` 返回 `Teacher|College` 表项中的信息
 - 日志记录
 
-函数路由：`Teacher_Inquire`
+函数路由：`Teacher_Inquire[POST]`
 
 日志：
 
@@ -625,11 +655,11 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Tno":"" ->str,
-     		"Tname":"" ->str,
-     		"Tlevel":"" ->str,
-     		"Tgender":"" ->str,
-     		"Cono":"" ->str
+     		"Tno":"" ,
+     		"Tname":"" ,
+     		"Tlevel":"" ,
+     		"Tgender":"" ,
+     		"Cono":"" 
  			} ->dict,
  "Scredit":[] ->list(dict(Teacher|College))
 }
@@ -657,12 +687,10 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 信息展示与查询
 
   - 根据 `MRno|MRtime|Uno` 返回 `MeetingRoom` 表项中的信息
+  - 日志记录
 
 
-    - 日志记录
-
-
-函数路由：`MeetingRoom_Inquire`
+函数路由：`MeetingRoom_Inquire[POST]`
 
 日志：
 
@@ -675,9 +703,9 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"MRno":"" ->str,
-     		"MRtime":"" ->str,
-     		"Uno":"" ->str
+     		"MRno":"" ,
+     		"MRtime":"" ,
+     		"Uno":"" 
  			} ->dict,
  "MeetingRoom":[] ->list(dict(MeetingRoom))
 }
@@ -687,7 +715,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
   - 根据 `MRno+MRtime+Uno` 对 `MeetingRoom` 表进行注入，同时判断合法性
   - 日志记录
 
-函数路由：`MeetingRoom_Insert`
+函数路由：`MeetingRoom_Insert[POST]`
 
 日志：
 
@@ -700,10 +728,10 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Info":{
-     	"MRno":"", ->str
-        "MRtime":"", ->str
-        "Uno":"" ->str
+     	"MRno":"", 
+        "MRtime":"", 
+        "Uno":"" 
  		} ->dict,
- "flag":"" ->str{"0"|"1"}
+ "flag":"" {"0"|"1"}
 }
 ```
