@@ -211,7 +211,7 @@ export default function App() {
             if (res.data.status === 200) {
               if (res.data.content) setNoteDetails(res.data.content);
               if (res.data.freshToken)
-                localStorage.setItem("xcAuthorization", res.data.freshToken);
+                localStorage.setItem("dbAuthorization", res.data.freshToken);
               success("获取游记详情成功");
             } else {
               error("获取游记详情失败！");
@@ -220,8 +220,8 @@ export default function App() {
                 if (res.data?.msg === 'Authentication expires.') {
                   error("登录已过期，请重新登录！");
                   if (process.env.NEXT_PUBLIC_TEST !== "test") {
-                    localStorage.removeItem("xcuserInfo");
-                    localStorage.removeItem("xcAuthorization");
+                    localStorage.removeItem("dbuserInfo");
+                    localStorage.removeItem("dbAuthorization");
                   }
                   window.location.href = "/login";
                 }
@@ -267,8 +267,8 @@ export default function App() {
                 if (res.data?.msg === 'Authentication expires.') {
                   error("登录已过期，请重新登录！");
                   if (process.env.NEXT_PUBLIC_TEST !== "test") {
-                    localStorage.removeItem("xcuserInfo");
-                    localStorage.removeItem("xcAuthorization");
+                    localStorage.removeItem("dbuserInfo");
+                    localStorage.removeItem("dbAuthorization");
                   }
                   window.location.href = "/login";
                 }

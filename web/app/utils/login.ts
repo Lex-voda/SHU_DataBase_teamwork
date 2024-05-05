@@ -1,35 +1,35 @@
 import axios from "axios";
 import { error, success } from "./message";
+import sha256 from './sha256.js';
 
-async function signInClicked(username: string, password: string) {
+async function signInClicked(uno: string, password: string) {
   try {
-    // console.log(`${process.env.NEXT_PUBLIC_HOST}`);
+    // console.log(sha256(password));
+    if(process.env.NEXT_PUBLIC_TEST === "test"){
+      return process.env.NEXT_PUBLIC_STATUS;
+    }
     let result='failed';
     axios
-      .post(`https://47.120.68.102/api/nofresh/moderationPlatform/login`, {
-        username: username,
-        password: password,
+      .post(`${process.env.NEXT_PUBLIC_HOST}/Login`, {
+        Uno: uno,
+        Key: sha256(password),
       })
       .then((res) => {
         console.log(res)
         if (res.status === 200) {
-          if (res.data.status === 200) {
+          if (res.data.flag) {
             success("登陆成功");
             localStorage.setItem(
-              "xcuserInfo",
+              "dbuserInfo",
               JSON.stringify({
-                username: username,
-                permission: res.data.permission,
-                userId: res.data.reviewerId,
+                Uno: uno,
+                status: res.data.status,
               })
             );
-            localStorage.setItem("xcAuthorization", res.data.token);
-            result= "success";
+            localStorage.setItem("dbAuthorization", res.data.RequestHeader);
+            result= res.data.status;
           } else {
             error("登录失败！");
-            if (res.data.status === 401) {
-              console.log(res.data?.msg);
-            }
           }
         }
       })
@@ -46,8 +46,8 @@ async function signInClicked(username: string, password: string) {
 
 async function logoutClicked() {
   if (process.env.NEXT_PUBLIC_TEST !== "test") {
-    localStorage.removeItem("xcuserInfo");
-    localStorage.removeItem("xcAuthorization");
+    localStorage.removeItem("dbuserInfo");
+    localStorage.removeItem("dbAuthorization");
   }
   window.location.href = "/";
 }

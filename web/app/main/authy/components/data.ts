@@ -44,7 +44,7 @@ if (process.env.NEXT_PUBLIC_TEST === "test") {
           if (res.data.status === 200) {
             if (res.data.reviewerList) users = res.data.reviewerList;
             if (res.data.freshToken)
-              localStorage.setItem("xcAuthorization", res.data.freshToken);
+              localStorage.setItem("dbAuthorization", res.data.freshToken);
             success("获取审核人员列表成功");
           } else {
             error("获取审核人员列表失败！");
@@ -53,8 +53,8 @@ if (process.env.NEXT_PUBLIC_TEST === "test") {
               if (res.data?.msg === 'Authentication expires.') {
                 error("登录已过期，请重新登录！");
                 if (process.env.NEXT_PUBLIC_TEST !== "test") {
-                  localStorage.removeItem("xcuserInfo");
-                  localStorage.removeItem("xcAuthorization");
+                  localStorage.removeItem("dbuserInfo");
+                  localStorage.removeItem("dbAuthorization");
                 }
                 window.location.href = "/login";
               }
