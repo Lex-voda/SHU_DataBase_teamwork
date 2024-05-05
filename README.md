@@ -23,6 +23,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 		   修改了请求头的存储位置为Header属性
 		   完成了界面与功能部分的全部文档
 2024/5/5： 更新了数据库的表，增加ProjMem维护项目队员名单
+           MeetingRoom表拆解为MeetingRoomS，MeetingRoomT和MeetingRoomA
+           修改了对应的通信字典和函数路由
 ```
 
 
@@ -35,26 +37,29 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 #### 表
 
-| 表          | 属性集                               | 描述           |
-| ----------- | ------------------------------------ | -------------- |
-| College     | {Cono,Cname}                         | 学院信息       |
-| Admin       | {Ano,Akey}                           | 管理员信息     |
-| Teacher     | {Tno,Tkey,Tname,Tlevel,Tgender,Cono} | 教师信息       |
-| Student     | {Sno,Skey,Sname,Grade,Sgender,Cono}  | 学生信息       |
-| Course      | {Cno,Cname,Credit,Ctno,Tno}          | 课程信息       |
-| Scredit     | {Sno,Cno,Pass}                       | 学分完成情况   |
-| Tcredit     | {Tno,Cno}                            | 教分完成情况   |
-| Project     | {Pno,Pname,Sno,Tno}                  | 项目情况       |
-| ProjMem     | {Pno,Sno}                            | 项目队员表     |
-| ClassRoom   | {CRno,Cno,Ctno,CRtime}               | 教室安排信息   |
-| MeetingRoom | {MRno,Sno,MRtime}                    | 会议室预约情况 |
+| 表           | 属性集                               | 描述                 |
+| ------------ | ------------------------------------ | -------------------- |
+| College      | {Cono,Cname}                         | 学院信息             |
+| Admin        | {Ano,Akey}                           | 管理员信息           |
+| Teacher      | {Tno,Tkey,Tname,Tlevel,Tgender,Cono} | 教师信息             |
+| Student      | {Sno,Skey,Sname,Grade,Sgender,Cono}  | 学生信息             |
+| Course       | {Cno,Cname,Credit,Ctno,Tno}          | 课程信息             |
+| Scredit      | {Sno,Cno,Pass}                       | 学分完成情况         |
+| Tcredit      | {Tno,Cno}                            | 教分完成情况         |
+| Project      | {Pno,Pname,Sno,Tno}                  | 项目情况             |
+| ProjMem      | {Pno,Sno}                            | 项目队员表           |
+| ClassRoom    | {CRno,Cno,Ctno,CRtime}               | 教室安排信息         |
+| MeetingRoomS | {MRno,Sno,MRtime}                    | 会议室预约学生情况   |
+| MeetingRoomT | {MRno,Tno,MRtime}                    | 会议室预约教师情况   |
+| MeetingRoomA | {MRno,Ano,MRtime}                    | 会议室预约管理员情况 |
 
 备注：
 
 - `uno` 代表此属性可能是 `sno` 或 `tno`
 - 教师表中的 `Tlevel` 是职称：`{讲师|副教授|教授}`
 - 课程表中的 `Ctno` 是相对教师号，格式`1001`
-- 项目表中的 `Pstatus` ：0-队员，1-队长，2-指导老师
+- 项目表中的 `Sno` 是队长的学号
+- 项目队员表`ProjMem`记录了队员的学号
 - 课程表中没有上课地点和时间的信息，结合教室表才是完整的课程表，`CRtime`和`MRtime`的格式是`四1-2`
 - 教室号`CRno`的格式是`{A-H}+{1-5}+{0-3}+{1-9}`
 - 会议室号`MRno`的格式是`{M}+{1-5}+{0-3}+{1-9}`
@@ -98,7 +103,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 { 
  "Uno":"" ,
  "Key":"" ,
- "status":"" :{"A"|"T"|"S"},
+ "status":"" :"A"|"T"|"S",
  "flag": ->bool,
  "RequestHeader":"":[SHA256(Uno+Key+Time)]
 }
@@ -141,8 +146,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Uno":"" 
- 			}
+     		"Sno":"" 
+ 			},
  "Scredit":[
     		{
              "Cno":"",
@@ -212,16 +217,16 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 查询：
 
-  - 根据 `Sno` 返回 `Project` 表项中的信息
+  - 根据 `Sno` 返回 `Project|ProjMem|Stedunt|Teacher` 表项中的信息
 
   - 日志记录
 
-函数路由：`Project_Inquire[POST]`
+函数路由：`Project_Inquire_S[POST]`
 
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Project",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"Project|ProjMem|Stedunt|Teacher",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -235,12 +240,24 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		{
              "Pno":"",
              "Pname":"",
-             "Puno":"",
-             "Pstatus":""
+             "Sno":"",
+             "Sname":"",
+             "Tno":"",
+             "Tname":""
             }
+ 		   ],
+ "ProjMen":[
+     		[
+     		{
+             "Sno":"",
+             "Sname":""
+            }
+            ]
  		   ]
 }
 ```
+
+注：`Project`和`ProjMen` 每一项是对齐的，即相同的下标代表同一个项目`ProjMen[i]`存储了第`i`个项目的成员信息
 
 - 申报
   - 根据 `Info` 对 `Project`  表进行注入
@@ -300,7 +317,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		"CRtime":"" ,
      		"Cno":"" ,
      		"Ctno":"" ,
- 			} ->dict,
+ 			},
  "ClassRoom":[
      		{
             "CRno":"" ,
@@ -326,7 +343,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 预约
 
-  - 输入`MRtime`进行预约，使用控件选择 `MRno` ，自动传输 `Uno`
+  - 输入`MRtime`进行预约，使用控件选择 `MRno` ，自动传输 `Sno`
   - 显示预约成功或失败信息
   - 注：预约以一课时为单位
 
@@ -334,17 +351,17 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 信息展示与查询
 
-  - 根据 `MRno|MRtime|Uno` 返回 `MeetingRoom` 表项中的信息
+  - 根据 `MRno|MRtime` 返回 `MeetingRoomS` |`MeetingRoomT`| `MeetingRoomA`表项中的信息
 
 
   - 日志记录
 
-函数路由：`MeetingRoom_Inquire[POST]`
+函数路由：`MeetingRoomS_Inquire[POST]`
 
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoom",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoomS|MeetingRoomT|MeetingRoomA",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -353,23 +370,27 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 {
  "Keywords":{
      		"MRno":"" ,
-     		"MRtime":"" ,
-     		"Uno":"" 
+     		"MRtime":""
  			} ->dict,
- "MeetingRoom":[] ->list(dict(MeetingRoom))
+ "MeetingRoom":[
+     			{
+                "MRno":"" ,
+                "MRtime":"",
+                }
+ 				]
 }
 ```
 
 - 预约
-  - 根据 `MRno+MRtime+Uno` 对 `MeetingRoom` 表进行注入，同时判断合法性
+  - 根据 `MRno+MRtime+Sno` 对 `MeetingRoomS` 表进行注入，同时判断合法性
   - 日志记录
 
-函数路由：`MeetingRoom_Insert[POST]`
+函数路由：`MeetingRoomS_Inser_S[POST]`
 
 日志：
 
 ```
---Insert--RequestHeader:{RequestHeader},Table:"MeetingRoom",Info:{Info}
+--Insert--RequestHeader:{RequestHeader},Table:"MeetingRoomS",Info:{Info}
 ```
 
 通信字典：
@@ -379,8 +400,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  "Info":{
      	"MRno":"", 
         "MRtime":"", 
-        "Uno":"" 
- 		} ->dict,
+        "Sno":"" 
+ 		},
  "flag":"" {"0"|"1"}
 }
 ```
@@ -391,12 +412,12 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 进入本页面后自动：传输 `Uno` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `Tno` 和 `RequestHeader` 进行查询
 - 得到信息后展示表项
 
 后端：
 
-- 根据 `Uno` 返回 `Tcredit` 表项中的信息
+- 根据 `Tno` 返回 `Tcredit|Course` 表项中的信息
 - 日志记录
 
 函数路由：`Tcredict_Inquire[GET]`
@@ -404,7 +425,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Tcredit",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"Tcredit|Course",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -412,9 +433,15 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Uno":"" 
- 			} ->dict,
- "Scredit":[] ->list(dict(Scredit))
+     		"Tno":"" 
+ 			},
+ "Tcredit":[
+    		{
+             "Cno":"",
+             "Cname":"",
+             "Credit":""
+            } 
+ 			]
 }
 ```
 
@@ -449,8 +476,16 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		"Ctno":"" ,
      		"Tname":"" ,
      		"Ctime":"" 
- 			} ->dict,
- "Course":[] ->list(dict(Course))
+ 			},
+ "Course":[{
+    		"Cno":"",
+     		"Cname":"" ,
+     		"Credit":"" ,
+     		"Ctno":"" ,
+     		"Tname":"" ,
+     		"Ctime":"" 
+			}	
+ 		   ]
 }
 ```
 
@@ -463,16 +498,16 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 后端：
 
-- 根据 `Sno` 返回 `Project` 表项中的信息
+- 根据 `Tno` 返回 `Project` 表项中的信息
 
 - 日志记录
 
-函数路由：`Project_Inquire[POST]`
+函数路由：`Project_Inquire_T[POST]`
 
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Project",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"Project|ProjMem|Stedunt|Teacher",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -480,9 +515,26 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Sno":"" 
- 			} ->dict,
- "Project":[] ->list(dict(Project))
+     		"Tno":"" 
+ 			},
+ "Project":[
+     		{
+             "Pno":"",
+             "Pname":"",
+             "Sno":"",
+             "Sname":"",
+             "Tno":"",
+             "Tname":""
+            }
+ 		   ],
+ "ProjMen":[
+     		[
+     		{
+             "Sno":"",
+             "Sname":""
+            }
+            ]
+ 		   ]
 }
 ```
 
