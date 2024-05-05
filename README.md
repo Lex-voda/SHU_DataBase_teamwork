@@ -221,7 +221,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
   - 日志记录
 
-函数路由：`Project_Inquire_S[POST]`
+函数路由：`Project_Inquire_S[GET]`
 
 日志：
 
@@ -263,12 +263,12 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
   - 根据 `Info` 对 `Project`  表进行注入
   - 日志记录
 
-函数路由：`Project_Insert[GET]`
+函数路由：`Project_Insert[POST]`
 
 日志：
 
 ```
---Insert--RequestHeader:{},Table:"Project",Info:{Info}
+--Insert--RequestHeader:{},Table:"Project|ProjMen",Info:{Info}
 ```
 
 通信字典：
@@ -277,15 +277,18 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 {
  "Info":{
  		"Pname":"", 
- 		"Pmember":[
- 					{"no":"", 
- 					 "status":"", {"0"|"1"|"2"}
+ 		"PSno":[
+ 					{
+                     "Sno":""
  					}
  				  ]
  		},
+    	"PTno":"",
  "flag":"" {"0"|"1"}
 }
 ```
+
+注：第一个`Sno`为队长
 
 ##### 教室使用查询
 
