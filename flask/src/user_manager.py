@@ -126,7 +126,7 @@ class UserManager:
                 "Uno": row[0],
                 "Key": row[1],
                 "status": "A",
-                "flag": True
+                "flag": "True"
             }
         return {}
 
@@ -140,7 +140,7 @@ class UserManager:
                 "Uno": row[0],
                 "Key": row[1],
                 "status": "T",
-                "flag": True
+                "flag": "True"
             }
         return {}
 
@@ -155,7 +155,7 @@ class UserManager:
                 "Uno": row[0],
                 "Key": row[1],
                 "status": "S",
-                "flag": True
+                "flag": "True"
             }
         return {}
     
@@ -194,6 +194,50 @@ class UserManager:
             return jsonify({"status": "success"})
         except Exception as e:
             return jsonify({"status": "failed", "message": str(e)})
+        
+        
+    # 学分完成情况
+    def student_scredit_complete_situation(self, cursor, sno):
+        query = """
+            SELECT
+                Scredit.Cno,
+                Course.Cname,
+                Course.Credit
+            FROM
+                Scredit
+            JOIN
+                Course ON Course.Cno = Scredit.Cno
+            WHERE
+                Scredit.Sno = %(sno)s
+        """
+        parameters = {'sno': sno}
+        cursor.execute(query, parameters)
+        rows = cursor.fetchall()
+        
+        enrolled_courses = [
+            {
+                "Cno": row[0],
+                "Cname": row[1],
+                "Credit": row[2],
+            }
+            for row in rows
+        ]
+
+        return {"course_info": enrolled_courses}
+    
+        # return jsonify(
+        #     {
+        #         "course_info": enrolled_courses,
+        #     }
+        # )
+        
+        # if rows:
+        #     return {
+        #         "Cno": rows[0],
+        #         "Cname": rows[1],
+        #         "Credit": rows[3],
+        #     }
+        # return {}    
 
     def get_student_enrolled_courses(self, cursor, xh):
         query = """
