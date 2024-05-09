@@ -24,14 +24,14 @@ user_manager = UserManager(db_manager, auth_manager)
 @db_manager.connect_db
 def login(cursor):
     data = request.get_json()
-    username = data["login_info"]["username"]
-    password = data["login_info"]["password"]
-    print(data)
+    username = data["Uno"]
+    password = data["Key"]
+    # print(data)
     if not username or not password:
         return (
             jsonify(
                 {
-                    "status": "failed",
+                    "flag": "failed",
                     "message": "Missing username or password",
                 }
             ),
@@ -39,28 +39,36 @@ def login(cursor):
         )
 
     try:
+        # 获得改用户的身份
         user_type = user_manager.verify_credentials(cursor, username, password)
+        #print(user_type)
+        # 判断是否存在该用户
         if user_type is not None:
+            # 获取用户完整数据
             user_info = user_manager.get_user_info(cursor, user_type, username)
-            ans = {
-                "Authorization": auth_manager.generate_token(
-                    username, user_info["user_info"]["role"]
-                ),
-                **user_info,
-            }
+            # print(user_info)
+            # print("Authorization = " + str(auth_manager.generate_token(username, user_info["status"])))
+            # ans = {
+            #     "Authorization": str(auth_manager.generate_token(
+            #         username, user_info["status"]
+            #     )),
+            #     #user_info内容："Uno": row[0],"Key": row[1],"status": "A","flag": True
+            #     **user_info,
+            # }
             return jsonify(
-                {
-                    "Authorization": auth_manager.generate_token(
-                        username, user_info["user_info"]["role"]
-                    ),
-                    **user_info,
-                }
-            )
+                    {
+                        # generate_token在生成Authorization
+                        "Authorization": auth_manager.generate_token(
+                            username, user_info["status"]
+                        ),
+                        **user_info,
+                    }
+                )
         else:
             return (
                 jsonify(
                     {
-                        "status": "failed",
+                        "flag": "failed",
                         "message": "Invalid credentials",
                     }
                 ),
@@ -68,10 +76,11 @@ def login(cursor):
             )
 
     except Exception as e:
+        # print("Exception occurred:", str(e))
         return (
             jsonify(
                 {
-                    "status": "failed",
+                    "flag": "failed",
                     "message": str(e),
                 }
             ),

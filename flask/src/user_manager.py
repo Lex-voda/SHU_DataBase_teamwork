@@ -7,79 +7,158 @@ class UserManager:
         self.db_manager = db_manager
         self.auth_manager = auth_manager
 
+    # def verify_credentials(self, cursor, username, password):
+    #     """验证用户凭据并返回用户类型"""
+    #     query = "SELECT mm, qx FROM P WHERE xh = %s"
+    #     cursor.execute(query, (username,))
+    #     result = cursor.fetchone()
+    #     if result and result[0].strip() == password:
+    #         return result[1]  # 返回用户类型
+    #     return None
+
+    # def get_user_info(self, cursor, user_type, username):
+    #     """根据用户类型获取用户信息"""
+    #     user_type = user_type.strip()
+    #     if user_type == "0":
+    #         return self.__get_admin_info(cursor, username, user_type)
+
+    #     elif user_type == "1":
+    #         return self.__get_teacher_info(cursor, username, user_type)
+
+    #     elif user_type == "2":
+    #         return self.__get_student_info(cursor, username, user_type)
+
+    #     return {}
+
+    # def __get_student_info(self, cursor, username, user_type):
+    #     """获取学生信息"""
+    #     student_query = "SELECT S.xh, S.xm, I.xymc, S.zdnj, S.xb FROM S, I WHERE S.xh = %s AND S.xyh = I.xyh"
+    #     cursor.execute(student_query, (username,))
+    #     user_info = cursor.fetchone()
+    #     return {
+    #         "status": "success",
+    #         "user_info": {
+    #             "username": user_info[0],
+    #             "name": user_info[1],
+    #             "school": user_info[2],
+    #             "level": user_info[3],
+    #             "gender": user_info[4],
+    #             "role": user_type,
+    #         },
+    #     }
+
+    # def __get_teacher_info(self, cursor, username, user_type):
+    #     """获取教师信息"""
+    #     teacher_query = "SELECT T.jsgh, T.jsxm, T.jszc, T.xb, I.xymc FROM T, I WHERE jsgh = %s AND T.xyh = I.xyh"
+    #     cursor.execute(teacher_query, (username,))
+    #     user_info = cursor.fetchone()
+    #     return {
+    #         "status": "success",
+    #         "user_info": {
+    #             "username": user_info[0],
+    #             "name": user_info[1],
+    #             "school": user_info[4],
+    #             "level": user_info[2],
+    #             "gender": user_info[3],
+    #             "role": user_type,
+    #         },
+    #     }
+
+    # def __get_admin_info(self, cursor, username, user_type):
+    #     """获取管理员信息（如果需要）"""
+    #     # 如果管理员有特定信息需要返回，可以在这里添加查询逻辑
+    #     # 目前只返回用户类型
+    #     return {
+    #         "status": "success",
+    #         "user_info": {
+    #             "username": username,
+    #             "name": "admin",
+    #             "school": "",
+    #             "level": "",
+    #             "gender": "",
+    #             "role": user_type,
+    #         },
+    #     }
+
     def verify_credentials(self, cursor, username, password):
         """验证用户凭据并返回用户类型"""
-        query = "SELECT mm, qx FROM P WHERE xh = %s"
-        cursor.execute(query, (username,))
-        result = cursor.fetchone()
-        if result and result[0].strip() == password:
-            return result[1]  # 返回用户类型
+        # 查询管理员表
+        query_admin = "SELECT Ano FROM Admin WHERE Ano = %s AND Akey = %s"
+        cursor.execute(query_admin, (username, password))
+        if cursor.rowcount > 0:
+            return "A"
+
+        # 查询教师表
+        query_teacher = "SELECT Tno FROM Teacher WHERE Tno = %s AND Tkey = %s"
+        cursor.execute(query_teacher, (username, password))
+        if cursor.rowcount > 0:
+            return "T"
+
+        # 查询学生表
+        query_student = "SELECT Sno FROM Student WHERE Sno = %s AND Skey = %s"
+        cursor.execute(query_student, (username, password))
+        if cursor.rowcount > 0:
+            return "S"
+
         return None
 
     def get_user_info(self, cursor, user_type, username):
         """根据用户类型获取用户信息"""
         user_type = user_type.strip()
-        if user_type == "0":
-            return self.__get_admin_info(cursor, username, user_type)
+        if user_type == "A":
+            return self.__get_admin_info(cursor, username)
 
-        elif user_type == "1":
-            return self.__get_teacher_info(cursor, username, user_type)
+        elif user_type == "T":
+            return self.__get_teacher_info(cursor, username)
 
-        elif user_type == "2":
-            return self.__get_student_info(cursor, username, user_type)
+        elif user_type == "S":
+            return self.__get_student_info(cursor, username)
 
         return {}
 
-    def __get_student_info(self, cursor, username, user_type):
-        """获取学生信息"""
-        student_query = "SELECT S.xh, S.xm, I.xymc, S.zdnj, S.xb FROM S, I WHERE S.xh = %s AND S.xyh = I.xyh"
-        cursor.execute(student_query, (username,))
-        user_info = cursor.fetchone()
-        return {
-            "status": "success",
-            "user_info": {
-                "username": user_info[0],
-                "name": user_info[1],
-                "school": user_info[2],
-                "level": user_info[3],
-                "gender": user_info[4],
-                "role": user_type,
-            },
-        }
+    def __get_admin_info(self, cursor, username):
+        """获取管理员信息"""
+        query = "SELECT Ano, Akey FROM Admin WHERE Ano = %s"
+        cursor.execute(query, (username,))
+        row = cursor.fetchone()
+        if row:
+            return {
+                "Uno": row[0],
+                "Key": row[1],
+                "status": "A",
+                "flag": True
+            }
+        return {}
 
-    def __get_teacher_info(self, cursor, username, user_type):
+    def __get_teacher_info(self, cursor, username):
         """获取教师信息"""
-        teacher_query = "SELECT T.jsgh, T.jsxm, T.jszc, T.xb, I.xymc FROM T, I WHERE jsgh = %s AND T.xyh = I.xyh"
-        cursor.execute(teacher_query, (username,))
-        user_info = cursor.fetchone()
-        return {
-            "status": "success",
-            "user_info": {
-                "username": user_info[0],
-                "name": user_info[1],
-                "school": user_info[4],
-                "level": user_info[2],
-                "gender": user_info[3],
-                "role": user_type,
-            },
-        }
+        query = "SELECT Tno, Tkey FROM Teacher WHERE Tno = %s"
+        cursor.execute(query, (username,))
+        row = cursor.fetchone()
+        if row:
+            return {
+                "Uno": row[0],
+                "Key": row[1],
+                "status": "T",
+                "flag": True
+            }
+        return {}
 
-    def __get_admin_info(self, cursor, username, user_type):
-        """获取管理员信息（如果需要）"""
-        # 如果管理员有特定信息需要返回，可以在这里添加查询逻辑
-        # 目前只返回用户类型
-        return {
-            "status": "success",
-            "user_info": {
-                "username": username,
-                "name": "admin",
-                "school": "",
-                "level": "",
-                "gender": "",
-                "role": user_type,
-            },
-        }
 
+    def __get_student_info(self, cursor, username):
+        """获取学生信息"""
+        query = "SELECT Sno, Skey FROM Student WHERE Sno = %s"
+        cursor.execute(query, (username,))
+        row = cursor.fetchone()
+        if row:
+            return {
+                "Uno": row[0],
+                "Key": row[1],
+                "status": "S",
+                "flag": True
+            }
+        return {}
+    
     # 学生方法
 
     def enroll_student_course(self, cursor, xh, kch, jsh):
