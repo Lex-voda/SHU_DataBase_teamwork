@@ -23,10 +23,11 @@ user_manager = UserManager(db_manager, auth_manager)
 @app.route("/Login/", methods=["POST"])
 @db_manager.connect_db
 def login(cursor):
+    print('shit')
     data = request.get_json()
     username = data["Uno"]
     password = data["Key"]
-    # print(data)
+    print(data)
     if not username or not password:
         return (
             jsonify(
@@ -484,4 +485,4 @@ def manage_student_course_drop(cursor, current_user):
 
 
 if __name__ == "__main__":
-    app.run(debug=False, host="localhost", port=3000)
+    app.run(debug=True, host="localhost", port=5000)
