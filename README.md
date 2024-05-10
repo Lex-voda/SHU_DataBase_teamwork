@@ -32,6 +32,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 			增加了格式断言设计（触发器还没想好做什么，数据库有没有自动随机数的命令啊）
 2024/5/7:	完善了会议室预约功能作为核心展示项目
 			触发器，写好了！
+2024/5/9:	更新了教师端
+2024/5/10: 	修改了文档中Ctime为CRtime，完成了管理员端
 ```
 
 
@@ -183,12 +185,12 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 传输 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 和 `RequestHeader` 进行查询（注：查询条目是任意项可选的，允许多条目以且逻辑查询）
+- 传输 `{Cno|Cname|Credit|Ctno|Tname|CRtime}` 和 `RequestHeader` 进行查询（注：查询条目是任意项可选的，允许多条目以且逻辑查询）
 - 得到信息后展示表项
 
 后端：
 
-- 根据 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 返回 `Course|Teacher` 表项中的信息
+- 根据 `{Cno|Cname|Credit|Ctno|Tname|CRtime}` 返回 `Course|Teacher|ClassRoom` 表项中的信息
 - 日志记录
 
 函数路由：`Course_Inquire[POST]`
@@ -196,7 +198,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Course|Teacher",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"Course|Teacher|ClassRoom",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -209,7 +211,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		"Credit":"" ,
      		"Ctno":"" ,
      		"Tname":"" ,
-     		"Ctime":"" 
+     		"CRtime":"" 
  			},
  "Course":[{
     		"Cno":"",
@@ -217,7 +219,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		"Credit":"" ,
      		"Ctno":"" ,
      		"Tname":"" ,
-     		"Ctime":"" 
+     		"CRtime":"" 
 			}	
  		   ]
 }
@@ -643,7 +645,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"ClassRoom",Keywords:{Keywords}
+--Inquire--RequestHeader:{RequestHeader},Table:"ClassRoom|Teacher|Course",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -655,8 +657,17 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		"CRtime":"" ,
      		"Cno":"" ,
      		"Ctno":"" ,
- 			} ->dict,
- "ClassRoom":[] ->list(dict(ClassRoom))
+ 			},
+ "ClassRoom":[
+     		{
+            "CRno":"" ,
+     		"CRtime":"" ,
+     		"Cno":"" ,
+            "Cname":"" ,
+     		"Ctno":"",
+            "Tname":""
+       	 	}
+			]
 }
 ```
 
