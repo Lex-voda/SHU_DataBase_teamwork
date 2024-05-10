@@ -161,39 +161,41 @@ class UserManager:
     
     # 学生方法
 
-    def enroll_student_course(self, cursor, xh, kch, jsh):
-        try:
-            insert_query = """
-                INSERT INTO E (xh, kch, jsh)
-                VALUES (%(xh)s, %(kch)s, %(jsh)s);
-            """
-            parameters = {
-                "xh": xh,
-                "kch": kch,
-                "jsh": jsh,
-            }
-            cursor.execute(insert_query, parameters)
-            return jsonify({"status": "success"})
-        except psycopg2.errors.UniqueViolation:
-            return jsonify({"status": "failed", "message": "UniqueViolation"})
+    ## 学生选课
+    # def enroll_student_course(self, cursor, xh, kch, jsh):
+    #     try:
+    #         insert_query = """
+    #             INSERT INTO E (xh, kch, jsh)
+    #             VALUES (%(xh)s, %(kch)s, %(jsh)s);
+    #         """
+    #         parameters = {
+    #             "xh": xh,
+    #             "kch": kch,
+    #             "jsh": jsh,
+    #         }
+    #         cursor.execute(insert_query, parameters)
+    #         return jsonify({"status": "success"})
+    #     except psycopg2.errors.UniqueViolation:
+    #         return jsonify({"status": "failed", "message": "UniqueViolation"})
 
-    def drop_student_course(self, cursor, xh, kch, jsh):
-        try:
-            delete_query = """
-                DELETE FROM E
-                WHERE xh = %(xh)s AND kch = %(kch)s AND jsh = %(jsh)s;
-            """
-            parameters = {
-                "xh": xh,
-                "kch": kch,
-                "jsh": jsh,
-            }
-            cursor.execute(delete_query, parameters)
-            if cursor.rowcount == 0:
-                raise Exception("No matching record found for deletion")
-            return jsonify({"status": "success"})
-        except Exception as e:
-            return jsonify({"status": "failed", "message": str(e)})
+    ## 学生退课
+    # def drop_student_course(self, cursor, xh, kch, jsh):
+    #     try:
+    #         delete_query = """
+    #             DELETE FROM E
+    #             WHERE xh = %(xh)s AND kch = %(kch)s AND jsh = %(jsh)s;
+    #         """
+    #         parameters = {
+    #             "xh": xh,
+    #             "kch": kch,
+    #             "jsh": jsh,
+    #         }
+    #         cursor.execute(delete_query, parameters)
+    #         if cursor.rowcount == 0:
+    #             raise Exception("No matching record found for deletion")
+    #         return jsonify({"status": "success"})
+    #     except Exception as e:
+    #         return jsonify({"status": "failed", "message": str(e)})
         
         
     # 学分完成情况
@@ -239,6 +241,7 @@ class UserManager:
         #     }
         # return {}    
 
+    ## 获取学生选取课程
     def get_student_enrolled_courses(self, cursor, xh):
         query = """
             SELECT
@@ -285,6 +288,7 @@ class UserManager:
             }
         )
 
+    # 课程信息查询
     def get_partial_open_course(
         self,
         cursor,
@@ -401,6 +405,122 @@ class UserManager:
                 "status": "success",
             }
         )
+    
+    #获取开设课程信息
+    def get_partial_open_course(
+        self,
+        cursor,
+        start_position,
+        length=20,
+        cno="",
+        cname="",
+        credit="",
+        ctno="",
+        tname="",
+        crtime="",
+    ):
+        # 构建 SQL 查询总数的语句
+        count_query = """
+            SELECT
+                COUNT(*)
+            FROM
+                Course
+            JOIN
+                Teacher ON Teacher.Tno = Course.Tno
+            JOIN
+                ClassRoom ON ClassRoom.Cno = Course.Cno
+        """
+
+        # 添加约束条件
+        where_conditions = []
+        parameters = {}
+
+        if cno != "":
+            where_conditions.append("Course.Cno = %(cno)s")
+            parameters["Cno"] = cno
+        if cname != "":
+            where_conditions.append("Course.Cname = %(cname)s")
+            parameters["Cname"] = cname
+        if credit != "":
+            where_conditions.append("Course.Credit = %(credit)s")
+            parameters["Credit"] = credit
+        if ctno != "":
+            where_conditions.append("Course.Ctno = %(ctno)s")
+            parameters["Ctno"] = ctno
+        if tname != "":
+            where_conditions.append("Teacher.tname = %(tname)s")
+            parameters["Tname"] = tname
+        if crtime != "":
+            where_conditions.append("ClassRoom.crtime = %(crtime)s")
+            parameters["CRtime"] = crtime
+
+        if where_conditions:
+            count_query += " WHERE " + " AND ".join(where_conditions)
+
+        # 执行总数查询
+        cursor.execute(count_query, parameters)
+        total_count = cursor.fetchone()[0]
+
+        # 构建 SQL 查询分页的语句
+        schedule_query = """
+            SELECT
+                Course.Cno,
+                Course.Cname,
+                Course.Credit,
+                Course.Ctno,
+                Teacher.Tname,
+                ClassRoom.CRtime
+            FROM
+                Course
+            JOIN
+                Teacher ON Teacher.Tno = Course.Tno
+            JOIN
+                ClassRoom ON ClassRoom.Cno = Course.Cno
+        """
+        if where_conditions:
+            schedule_query += " WHERE " + " AND ".join(where_conditions)
+
+        # 添加排序和分页
+        schedule_query += f"""
+            ORDER BY
+                Course.Cno
+            OFFSET
+                %(start_position)s
+            LIMIT
+                %(length)s;
+        """
+        parameters["start_position"] = start_position
+        parameters["length"] = length
+
+        # 执行分页查询
+        cursor.execute(schedule_query, parameters)
+        rows = cursor.fetchall()
+        partial_schedule = [
+            {
+                "Cno": row[0],
+                "Cname": row[1],
+                "Credit": row[2],
+                "Ctno": row[3],
+                "Tname": row[4],
+                "CRtime": row[5],
+            }
+            for row in rows
+        ]
+        print(
+            {
+                "total_count": total_count,
+                "course_info": partial_schedule,
+                "status": "success",
+            }
+        )
+        # 将总数和分页结果一起返回
+        return jsonify(
+            {
+                "total_count": total_count,
+                "course_info": partial_schedule,
+                "status": "success",
+            }
+        )
 
     # 教师方法
 
@@ -408,7 +528,7 @@ class UserManager:
         query = """
             SELECT
                 C.kch,
-                C.kcm,
+                C.cname,
                 O.sksj,
                 E.xh AS student_id,
                 S.xm AS student_name,
@@ -504,8 +624,8 @@ class UserManager:
             SELECT
                 C.kch,
                 C.kcm,
-                O.jsh,
-                T.jsxm,
+                O.ctno,
+                T.tname,
                 O.sksj,
                 C.xf,
                 C.zdrs
