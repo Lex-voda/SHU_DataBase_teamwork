@@ -34,6 +34,9 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 			触发器，写好了！
 2024/5/9:	更新了教师端
 2024/5/10: 	修改了文档中Ctime为CRtime，完成了管理员端
+			为了强调一致性，相同的函数只定义一次，删除了重复的函数说明
+			为了方便后端代码复用，在大部分重复的函数通信字典中使用Uno作为用户编号
+			注意：文档说明中为了区分，使用Sno,Tno和Uno作为说明，但实际使用的关键字以通信字典为准
 ```
 
 
@@ -386,8 +389,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 信息展示与查询：
   - 根据 `MRno` 返回 `MeetingRoomS` |`MeetingRoomT`| `MeetingRoomA`表项中的信息
-  
-    - 日志记录
+  - 日志记录
   
 
 函数路由：`MeetingRoom_Inquire[POST]`
@@ -433,7 +435,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  "Info":{
      	"MRno":"", 
         "MRtime":"", 
-        "Sno":"" 
+        "Uno":"" 
  		},
  "flag":"" {"0"|"1"}
 }
@@ -456,6 +458,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
+     		"Uno":"" ,
      		"MRno":"" ,
      		"MRtime":""
  			},
@@ -487,7 +490,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 {
  "Key":{
      	"MRno":"", 
-        "Sno":"" 
+        "Uno":"" 
  		},
  "flag":"" {"0"|"1"}
 }
@@ -545,36 +548,6 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 日志记录
 
 函数路由：`Course_Inquire[POST]`
-
-日志：
-
-```
---Inquire--RequestHeader:{RequestHeader},Table:"Course|Teacher",Keywords:{Keywords}
-```
-
-通信字典：
-
-```json
-{
- "Keywords":{
-     		"Cno":"" ,
-     		"Cname":"" ,
-     		"Credit":"" ,
-     		"Ctno":"" ,
-     		"Tname":"" ,
-     		"Ctime":"" 
- 			},
- "Course":[{
-    		"Cno":"",
-     		"Cname":"" ,
-     		"Credit":"" ,
-     		"Ctno":"" ,
-     		"Tname":"" ,
-     		"Ctime":"" 
-			}	
- 		   ]
-}
-```
 
 ##### 项目查询
 
@@ -643,35 +616,6 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 函数路由：`ClassRoom_Inquire[POST]`
 
-日志：
-
-```
---Inquire--RequestHeader:{RequestHeader},Table:"ClassRoom|Teacher|Course",Keywords:{Keywords}
-```
-
-通信字典：
-
-```json
-{
-  "Keywords":{
-     		"CRno":"" ,
-     		"CRtime":"" ,
-     		"Cno":"" ,
-     		"Ctno":"" ,
- 			},
- "ClassRoom":[
-     		{
-            "CRno":"" ,
-     		"CRtime":"" ,
-     		"Cno":"" ,
-            "Cname":"" ,
-     		"Ctno":"",
-            "Tname":""
-       	 	}
-			]
-}
-```
-
 ##### 会议室预约
 
 只能预约当天时间
@@ -701,29 +645,6 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 函数路由：`MeetingRoom_Inquire[POST]`
 
-日志：
-
-```
---Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoomS|MeetingRoomT|MeetingRoomA",Keywords:{Keywords}
-```
-
-通信字典：
-
-```json
-{
- "Keywords":{
-     		"MRno":"" ,
-     		"MRtime":""
- 			},
- "MeetingRoom":[
-     			{
-                "MRno":"" ,
-                "MRtime":"",
-                }
- 				]
-}
-```
-
 - 预约与续约
   - 根据 `MRno+MRtime+Sno` 对 `MeetingRoomT` 表进行注入，同时返回数据库的合法性判断
   - 日志记录
@@ -743,7 +664,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  "Info":{
      	"MRno":"", 
         "MRtime":"", 
-        "Tno":"" 
+        "Uno":"" 
  		},
  "flag":"" {"0"|"1"}
 }
@@ -755,32 +676,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 函数路由：`My_MeetingRoom_Inquire[POST]`
 
-日志：
-
-```
---Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoomS|MeetingRoomT|MeetingRoomA",Keywords:{Keywords}
-```
-
-通信字典：
-
-```json
-{
- "Keywords":{
-     		"MRno":"" ,
-     		"MRtime":""
- 			},
- "MeetingRoom":[
-     			{
-                "Uno":"" ,
-                "MRno":"" ,
-                "MRtime":"",
-                }
- 				]
-}
-```
-
 - 取消预约
-  - 根据 `MRno+Tno` 对 `MeetingRoomS` 表进行表项删除
+  - 根据 `MRno+Tno` 对 `MeetingRoomT` 表进行表项删除
   - 日志记录
 
 函数路由：`My_MeetingRoom_Delete_T[POST]`
@@ -797,7 +694,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 {
  "Key":{
      	"MRno":"", 
-        "Tno":"" 
+        "Uno":"" 
  		},
  "flag":"" {"0"|"1"}
 }
@@ -905,50 +802,58 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 管理（管理员预约）
 
-  - 使用控件选择 `MRno` 进行预约管理，前端展示已被预约的时间段和空闲时间段；
-  - 管理员可以把已经被预约的时间段置空，或禁止某时间段被预约（即以管理员身份进行预约）
-  - 显示管理成功或失败信息
-  - 注：预约以一课时为单位
+  - 管路员预约的界面和学生已经教师端完全一致，此处不再赘述
 
 后端：
 
 - 信息展示与查询
 
-  - 根据 `MRno|MRtime|Uno` 返回 `MeetingRoom` 表项中的信息
+  - 根据 `MRno|MRtime|Uno` 返回 `MeetingRoomS|MeetingRoomT|MeetingRoomA` 表项中的信息
   - 日志记录
 
-
 函数路由：`MeetingRoom_Inquire[POST]`
+
+- 预约与续约
+  - 根据 `MRno+MRtime+Ano` 对 `MeetingRoomA` 表进行注入，同时返回数据库的合法性判断
+  - 日志记录
+
+函数路由：`MeetingRoomS_Inser_A[POST]`
 
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoom",Keywords:{Keywords}
+--Insert--RequestHeader:{RequestHeader},Table:"MeetingRoomA",Info:{Info},flag:{flag}
 ```
 
 通信字典：
 
 ```json
 {
- "Keywords":{
-     		"MRno":"" ,
-     		"MRtime":"" ,
-     		"Uno":"" 
- 			} ->dict,
- "MeetingRoom":[] ->list(dict(MeetingRoom))
+ "Info":{
+        "MRno":"", 
+        "MRtime":"", 
+        "Uno":"" 
+        },
+ "flag":"" {"0"|"1"}
 }
 ```
 
-- 预约
-  - 根据 `MRno+MRtime+Uno` 对 `MeetingRoom` 表进行注入，同时判断合法性
+- 查询我的预约：
+  - 根据 `MRno|MRtime|ANO` 返回 `MeetingRoomS` |`MeetingRoomT`| `MeetingRoomA`表项中的信息
   - 日志记录
 
-函数路由：`MeetingRoom_Insert[POST]`
+函数路由：`My_MeetingRoom_Inquire[POST]`
+
+- 取消预约
+  - 根据 `MRno+Ano` 对 `MeetingRoomA` 表进行表项删除
+  - 日志记录
+
+函数路由：`My_MeetingRoom_Delete_A[POST]`
 
 日志：
 
 ```
---Insert--RequestHeader:{RequestHeader},Table:"MeetingRoom",Info:{Info}
+--Delete--RequestHeader:{RequestHeader},Table:"MeetingRoomA",Key:{Info},flag:{flag}
 ```
 
 通信字典：
@@ -959,7 +864,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      	"MRno":"", 
         "MRtime":"", 
         "Uno":"" 
- 		} ->dict,
+ 		},
  "flag":"" {"0"|"1"}
 }
 ```
