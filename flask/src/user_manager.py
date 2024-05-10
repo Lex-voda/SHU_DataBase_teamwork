@@ -225,7 +225,7 @@ class UserManager:
             for row in rows
         ]
 
-        return {"course_info": enrolled_courses}
+        return enrolled_courses
     
         # return jsonify(
         #     {
@@ -241,177 +241,175 @@ class UserManager:
         #     }
         # return {}    
 
-    ## 获取学生选取课程
-    def get_student_enrolled_courses(self, cursor, xh):
-        query = """
-            SELECT
-                E.kch,
-                C.kcm,
-                T.jsxm,
-                O.sksj,
-                C.xf,
-                O.jsh,
-                C.zdrs
-            FROM
-                E
-            JOIN
-                C ON E.kch = C.kch
-            JOIN
-                O ON E.kch = O.kch
-            JOIN
-                T ON O.jsgh = T.jsgh
-            WHERE
-                E.xh = %(xh)s;
-        """
-        parameters = {"xh": xh}
-        cursor.execute(query, parameters)
-        rows = cursor.fetchall()
+    # ## 获取学生选取课程
+    # def get_student_enrolled_courses(self, cursor, xh):
+    #     query = """
+    #         SELECT
+    #             E.kch,
+    #             C.kcm,
+    #             T.jsxm,
+    #             O.sksj,
+    #             C.xf,
+    #             O.jsh,
+    #             C.zdrs
+    #         FROM
+    #             E
+    #         JOIN
+    #             C ON E.kch = C.kch
+    #         JOIN
+    #             O ON E.kch = O.kch
+    #         JOIN
+    #             T ON O.jsgh = T.jsgh
+    #         WHERE
+    #             E.xh = %(xh)s;
+    #     """
+    #     parameters = {"xh": xh}
+    #     cursor.execute(query, parameters)
+    #     rows = cursor.fetchall()
 
-        enrolled_courses = [
-            {
-                "kch": row[0],
-                "kcm": row[1],
-                "jsxm": row[2],
-                "sksj": row[3],
-                "xf": row[4],
-                "jsh": row[5],
-                "zdrs": row[6],
-            }
-            for row in rows
-        ]
+    #     enrolled_courses = [
+    #         {
+    #             "kch": row[0],
+    #             "kcm": row[1],
+    #             "jsxm": row[2],
+    #             "sksj": row[3],
+    #             "xf": row[4],
+    #             "jsh": row[5],
+    #             "zdrs": row[6],
+    #         }
+    #         for row in rows
+    #     ]
 
-        return jsonify(
-            {
-                "status": "success",
-                "total_count": len(enrolled_courses),
-                "course_info": enrolled_courses,
-            }
-        )
+    #     return jsonify(
+    #         {
+    #             "status": "success",
+    #             "total_count": len(enrolled_courses),
+    #             "course_info": enrolled_courses,
+    #         }
+    #     )
 
-    # 课程信息查询
-    def get_partial_open_course(
-        self,
-        cursor,
-        start_position,
-        length=20,
-        kch="",
-        kcm="",
-        xf="",
-        jsh="",
-        jsxm="",
-        sksj="",
-    ):
-        # 构建 SQL 查询总数的语句
-        count_query = """
-            SELECT
-                COUNT(*)
-            FROM
-                O
-            JOIN
-                C ON O.kch = C.kch
-            JOIN
-                T ON O.jsgh = T.jsgh
-        """
+    # # 课程信息查询
+    # def get_partial_open_course(
+    #     self,
+    #     cursor,
+    #     start_position,
+    #     length=20,
+    #     kch="",
+    #     kcm="",
+    #     xf="",
+    #     jsh="",
+    #     jsxm="",
+    #     sksj="",
+    # ):
+    #     # 构建 SQL 查询总数的语句
+    #     count_query = """
+    #         SELECT
+    #             COUNT(*)
+    #         FROM
+    #             O
+    #         JOIN
+    #             C ON O.kch = C.kch
+    #         JOIN
+    #             T ON O.jsgh = T.jsgh
+    #     """
 
-        # 添加约束条件
-        where_conditions = []
-        parameters = {}
+    #     # 添加约束条件
+    #     where_conditions = []
+    #     parameters = {}
 
-        if kch != "":
-            where_conditions.append("O.kch = %(kch)s")
-            parameters["kch"] = kch
-        if kcm != "":
-            where_conditions.append("C.kcm = %(kcm)s")
-            parameters["kcm"] = kcm
-        if xf != "":
-            where_conditions.append("C.xf = %(xf)s")
-            parameters["xf"] = xf
-        if jsh != "":
-            where_conditions.append("O.jsh = %(jsh)s")
-            parameters["jsh"] = jsh
-        if jsxm != "":
-            where_conditions.append("T.jsxm = %(jsxm)s")
-            parameters["jsxm"] = jsxm
-        if sksj != "":
-            where_conditions.append("O.sksj = %(sksj)s")
-            parameters["sksj"] = sksj
+    #     if kch != "":
+    #         where_conditions.append("O.kch = %(kch)s")
+    #         parameters["kch"] = kch
+    #     if kcm != "":
+    #         where_conditions.append("C.kcm = %(kcm)s")
+    #         parameters["kcm"] = kcm
+    #     if xf != "":
+    #         where_conditions.append("C.xf = %(xf)s")
+    #         parameters["xf"] = xf
+    #     if jsh != "":
+    #         where_conditions.append("O.jsh = %(jsh)s")
+    #         parameters["jsh"] = jsh
+    #     if jsxm != "":
+    #         where_conditions.append("T.jsxm = %(jsxm)s")
+    #         parameters["jsxm"] = jsxm
+    #     if sksj != "":
+    #         where_conditions.append("O.sksj = %(sksj)s")
+    #         parameters["sksj"] = sksj
 
-        if where_conditions:
-            count_query += " WHERE " + " AND ".join(where_conditions)
+    #     if where_conditions:
+    #         count_query += " WHERE " + " AND ".join(where_conditions)
 
-        # 执行总数查询
-        cursor.execute(count_query, parameters)
-        total_count = cursor.fetchone()[0]
+    #     # 执行总数查询
+    #     cursor.execute(count_query, parameters)
+    #     total_count = cursor.fetchone()[0]
 
-        # 构建 SQL 查询分页的语句
-        schedule_query = """
-            SELECT
-                O.kch,
-                C.kcm,
-                O.jsh,
-                T.jsxm,
-                O.sksj,
-                C.xf,
-                C.zdrs
-            FROM
-                O
-            JOIN
-                C ON O.kch = C.kch
-            JOIN
-                T ON O.jsgh = T.jsgh
-        """
-        if where_conditions:
-            schedule_query += " WHERE " + " AND ".join(where_conditions)
+    #     # 构建 SQL 查询分页的语句
+    #     schedule_query = """
+    #         SELECT
+    #             O.kch,
+    #             C.kcm,
+    #             O.jsh,
+    #             T.jsxm,
+    #             O.sksj,
+    #             C.xf,
+    #             C.zdrs
+    #         FROM
+    #             O
+    #         JOIN
+    #             C ON O.kch = C.kch
+    #         JOIN
+    #             T ON O.jsgh = T.jsgh
+    #     """
+    #     if where_conditions:
+    #         schedule_query += " WHERE " + " AND ".join(where_conditions)
 
-        # 添加排序和分页
-        schedule_query += f"""
-            ORDER BY
-                O.kch
-            OFFSET
-                %(start_position)s
-            LIMIT
-                %(length)s;
-        """
-        parameters["start_position"] = start_position
-        parameters["length"] = length
+    #     # 添加排序和分页
+    #     schedule_query += f"""
+    #         ORDER BY
+    #             O.kch
+    #         OFFSET
+    #             %(start_position)s
+    #         LIMIT
+    #             %(length)s;
+    #     """
+    #     parameters["start_position"] = start_position
+    #     parameters["length"] = length
 
-        # 执行分页查询
-        cursor.execute(schedule_query, parameters)
-        rows = cursor.fetchall()
-        partial_schedule = [
-            {
-                "kch": row[0],
-                "kcm": row[1],
-                "jsh": row[2],
-                "jsxm": row[3],
-                "sksj": row[4],
-                "xf": row[5],
-                "zdrs": row[6],
-            }
-            for row in rows
-        ]
-        print(
-            {
-                "total_count": total_count,
-                "course_info": partial_schedule,
-                "status": "success",
-            }
-        )
-        # 将总数和分页结果一起返回
-        return jsonify(
-            {
-                "total_count": total_count,
-                "course_info": partial_schedule,
-                "status": "success",
-            }
-        )
+    #     # 执行分页查询
+    #     cursor.execute(schedule_query, parameters)
+    #     rows = cursor.fetchall()
+    #     partial_schedule = [
+    #         {
+    #             "kch": row[0],
+    #             "kcm": row[1],
+    #             "jsh": row[2],
+    #             "jsxm": row[3],
+    #             "sksj": row[4],
+    #             "xf": row[5],
+    #             "zdrs": row[6],
+    #         }
+    #         for row in rows
+    #     ]
+    #     print(
+    #         {
+    #             "total_count": total_count,
+    #             "course_info": partial_schedule,
+    #             "status": "success",
+    #         }
+    #     )
+    #     # 将总数和分页结果一起返回
+    #     return jsonify(
+    #         {
+    #             "total_count": total_count,
+    #             "course_info": partial_schedule,
+    #             "status": "success",
+    #         }
+    #     )
     
     #获取开设课程信息
     def get_partial_open_course(
         self,
         cursor,
-        start_position,
-        length=20,
         cno="",
         cname="",
         credit="",
@@ -419,48 +417,31 @@ class UserManager:
         tname="",
         crtime="",
     ):
-        # 构建 SQL 查询总数的语句
-        count_query = """
-            SELECT
-                COUNT(*)
-            FROM
-                Course
-            JOIN
-                Teacher ON Teacher.Tno = Course.Tno
-            JOIN
-                ClassRoom ON ClassRoom.Cno = Course.Cno
-        """
 
         # 添加约束条件
         where_conditions = []
         parameters = {}
 
         if cno != "":
-            where_conditions.append("Course.Cno = %(cno)s")
-            parameters["Cno"] = cno
+            where_conditions.append("Course.Cno = %(Cno_)s")
+            parameters["Cno_"] = cno
         if cname != "":
-            where_conditions.append("Course.Cname = %(cname)s")
-            parameters["Cname"] = cname
+            where_conditions.append("Course.Cname = %(Cname_)s")
+            parameters["Cname_"] = cname
         if credit != "":
-            where_conditions.append("Course.Credit = %(credit)s")
-            parameters["Credit"] = credit
+            where_conditions.append("Course.Credit = %(Credit_)s")
+            parameters["Credit_"] = credit
         if ctno != "":
-            where_conditions.append("Course.Ctno = %(ctno)s")
-            parameters["Ctno"] = ctno
+            where_conditions.append("Course.Ctno = %(Ctno_)s")
+            parameters["Ctno_"] = ctno
         if tname != "":
-            where_conditions.append("Teacher.tname = %(tname)s")
-            parameters["Tname"] = tname
+            where_conditions.append("Teacher.tname = %(Tname_)s")
+            parameters["Tname_"] = tname
         if crtime != "":
-            where_conditions.append("ClassRoom.crtime = %(crtime)s")
-            parameters["CRtime"] = crtime
+            where_conditions.append("ClassRoom.crtime = %(CRtime_)s")
+            parameters["CRtime_"] = crtime
 
-        if where_conditions:
-            count_query += " WHERE " + " AND ".join(where_conditions)
-
-        # 执行总数查询
-        cursor.execute(count_query, parameters)
-        total_count = cursor.fetchone()[0]
-
+        
         # 构建 SQL 查询分页的语句
         schedule_query = """
             SELECT
@@ -475,27 +456,15 @@ class UserManager:
             JOIN
                 Teacher ON Teacher.Tno = Course.Tno
             JOIN
-                ClassRoom ON ClassRoom.Cno = Course.Cno
+                Classroom ON ClassRoom.Cno = Course.Cno
         """
         if where_conditions:
             schedule_query += " WHERE " + " AND ".join(where_conditions)
 
-        # 添加排序和分页
-        schedule_query += f"""
-            ORDER BY
-                Course.Cno
-            OFFSET
-                %(start_position)s
-            LIMIT
-                %(length)s;
-        """
-        parameters["start_position"] = start_position
-        parameters["length"] = length
-
         # 执行分页查询
         cursor.execute(schedule_query, parameters)
         rows = cursor.fetchall()
-        partial_schedule = [
+        course_exist_ = [
             {
                 "Cno": row[0],
                 "Cname": row[1],
@@ -506,22 +475,66 @@ class UserManager:
             }
             for row in rows
         ]
-        print(
-            {
-                "total_count": total_count,
-                "course_info": partial_schedule,
-                "status": "success",
-            }
-        )
-        # 将总数和分页结果一起返回
-        return jsonify(
-            {
-                "total_count": total_count,
-                "course_info": partial_schedule,
-                "status": "success",
-            }
-        )
+        # 将结果返回
+        return course_exist_
 
+    def get_project(self, cursor, sno):
+        # 查询项目信息
+        proj_query = """
+            SELECT
+                Project.Pno,
+                Project.Pname,
+                Project.Sno,
+                Student.Sname,
+                Project.Tno,
+                Teacher.Tname
+            FROM
+                Project
+            JOIN
+                Student ON Student.Sno = Project.Sno
+            JOIN
+                Teacher ON Teacher.Tno = Project.Tno
+            WHERE
+                Project.Sno = %(sno)s
+        """
+        proj_parameters = {'sno': sno}
+        cursor.execute(proj_query, proj_parameters)
+        rows = cursor.fetchall()
+        
+        project_info = [
+            {
+                "Pno": row[0],
+                "Pname": row[1],
+                "Sno": row[2],
+                "Sname": row[3],
+                "Tno": row[4],
+                "Tname": row[5],
+                "ProjMen": []  # 用于存储组员信息
+            }
+            for row in rows
+        ]
+
+        # 查询每个项目的组员信息并添加到项目信息中
+        for proj in project_info:
+            pno = proj['Pno']
+            proj_mem_query = """
+                SELECT ProjMen.Sno, Student.Sname
+                FROM ProjMen
+                JOIN Student ON ProjMen.Sno = Student.Sno
+                WHERE Pno = %(pno)s
+            """
+            proj_mem_parameters = {'pno': pno}
+            cursor.execute(proj_mem_query, proj_mem_parameters)
+            mem_rows = cursor.fetchall()
+            
+            proj['ProjMen'] = [
+                {"Sno": mem_row[0], "Sname": mem_row[1]}
+                for mem_row in mem_rows
+            ]
+
+        return project_info
+
+        
     # 教师方法
 
     def get_teacher_enrolled_courses(self, cursor, jsgh):

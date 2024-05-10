@@ -199,7 +199,7 @@ def login(cursor):
 @app.route(
     "/Scredict_Inquire/",
     methods=["GET"],
-    endpoint="/scredict_inquire/",
+    endpoint="/Scredict_Inquire/",
 )
 # 学生身份认证
 @auth_manager.token_required("S")
@@ -208,20 +208,15 @@ def login(cursor):
 def student_scredit_complete(cursor):
     # 获取前端发送的 JSON 表单
     data = request.get_json()
-    print("qina data = ", data)
+    # print("qina data = ", data)
     # 暂时还没有做日志系统
     #authorization = request.headers.get("Authorization")
     sno = data["Sno"]
-    print("qian sno = ", sno)
+    # print("qian sno = ", sno)
     enrolled_courses = user_manager.student_scredit_complete_situation(cursor, sno)
-    print("qian enrolled_courses = ", enrolled_courses)
-    return jsonify(**enrolled_courses)
-    
-    # return jsonify(
-    #                 {
-    #                     **enrolled_courses,
-    #                 }
-    #             )
+    # print("qian enrolled_courses = ", enrolled_courses)
+    return jsonify(enrolled_courses)
+
     
 # 学生课程查询路由
 @app.route(
@@ -233,22 +228,40 @@ def student_scredit_complete(cursor):
 @db_manager.connect_db
 def course_exist_find(cursor):
     data = request.get_json()
+    # print("qian data = ", data)
     # 课程查询请求
     course_exist = user_manager.get_partial_open_course(
         cursor=cursor,
-        start_position=0,
-        length=40,
-        cno=data["Cno"],
-        cname=data["Cname"],
-        credit=data["Credit"],
-        ctno=data["Ctno"],
-        tname=data["Tname"],
-        crtime=data["CRtime"],
+        # start_position=0,
+        # length=40,
+        cno=data.get("Cno", ""),
+        cname=data.get("Cname", ""),
+        credit=data.get("Credit", ""),
+        ctno=data.get("Ctno", ""),
+        tname=data.get("Tname", ""),
+        crtime=data.get("CRtime", ""),
     )
-    print("qian course_exist_find = ", course_exist)
+    # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return course_exist
+    return jsonify(course_exist)
 
+# 学生项目查询路由
+@app.route(
+    "/Project_Inquire_S/",
+    methods=["GET"],
+    endpoint="/Project_Inquire_S/",
+)
+@auth_manager.token_required("S")
+@db_manager.connect_db
+def course_exist_find(cursor):
+    data = request.get_json()
+    # print("qian data = ", data)
+    sno = data["Sno"]
+    # 课程查询请求
+    project_exist = user_manager.get_project(cursor, sno)
+    # print("qian course_exist_find = ", course_exist)
+    # 返回已选课程信息的 JSON 响应
+    return jsonify(project_exist)
 
 # # 学生查课路由
 # @app.route(
