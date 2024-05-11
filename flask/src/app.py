@@ -114,20 +114,20 @@ def login(cursor):
 #     action = data["action"]
 
 #     if action == "get_schedule":
-        # # 课程查询请求
-        # partial_schedule = user_manager.get_partial_open_course(
-        #     cursor=cursor,
-        #     start_position=0,
-        #     length=40,
-        #     kch=data["course_info"]["kch"],
-        #     kcm=data["course_info"]["kcm"],
-        #     xf=data["course_info"]["xf"],
-        #     jsh=data["course_info"]["jsh"],
-        #     jsxm=data["course_info"]["jsxm"],
-        #     sksj=data["course_info"]["sksj"],
-        # )
-        # print(partial_schedule)
-        # return partial_schedule
+#         # 课程查询请求
+#         partial_schedule = user_manager.get_partial_open_course(
+#             cursor=cursor,
+#             start_position=0,
+#             length=40,
+#             kch=data["course_info"]["kch"],
+#             kcm=data["course_info"]["kcm"],
+#             xf=data["course_info"]["xf"],
+#             jsh=data["course_info"]["jsh"],
+#             jsxm=data["course_info"]["jsxm"],
+#             sksj=data["course_info"]["sksj"],
+#         )
+#         print(partial_schedule)
+#         return partial_schedule
 
 #     elif action == "enroll":
 #         # 选课请求
@@ -194,6 +194,10 @@ def login(cursor):
 #         }
 #     )
 
+
+
+
+
 # 学分完成情况查询路由
 # 连接路由
 @app.route(
@@ -201,8 +205,7 @@ def login(cursor):
     methods=["GET"],
     endpoint="/Scredict_Inquire/",
 )
-# 学生身份认证
-@auth_manager.token_required("S")
+#@auth_manager.token_required("S")
 # 连接数据库
 @db_manager.connect_db
 def student_scredit_complete(cursor):
@@ -217,6 +220,9 @@ def student_scredit_complete(cursor):
     # print("qian enrolled_courses = ", enrolled_courses)
     return jsonify(enrolled_courses)
 
+
+
+
     
 # 学生课程查询路由
 @app.route(
@@ -224,13 +230,13 @@ def student_scredit_complete(cursor):
     methods=["POST"],
     endpoint="/Course_Inquire/",
 )
-@auth_manager.token_required("S")
+#@auth_manager.token_required("S")
 @db_manager.connect_db
 def course_exist_find(cursor):
     data = request.get_json()
     # print("qian data = ", data)
     # 课程查询请求
-    course_exist = user_manager.get_partial_open_course(
+    course_exist = user_manager.get_course(
         cursor=cursor,
         # start_position=0,
         # length=40,
@@ -245,15 +251,19 @@ def course_exist_find(cursor):
     # 返回已选课程信息的 JSON 响应
     return jsonify(course_exist)
 
+
+
+
+
 # 学生项目查询路由
 @app.route(
     "/Project_Inquire_S/",
     methods=["GET"],
     endpoint="/Project_Inquire_S/",
 )
-@auth_manager.token_required("S")
+#@auth_manager.token_required("S")
 @db_manager.connect_db
-def course_exist_find(cursor):
+def project_exist_find(cursor):
     data = request.get_json()
     # print("qian data = ", data)
     sno = data["Sno"]
@@ -295,6 +305,96 @@ def course_exist_find(cursor):
 #             "message": "Invalid action",
 #         }
 #     )
+
+# # 学生创建项目路由
+# @app.route(
+#     "/Project_Insert/",
+#     methods=["POST"],
+#     endpoint="/Project_Insert/",
+# )
+# @auth_manager.token_required("S")
+# @db_manager.connect_db
+# def student_enroll(cursor, current_user):
+#     # 获取前端发送的 JSON 表单
+#     data = request.get_json()
+#     print(data)
+#     xh = current_user
+
+#     # 判断是课程查询请求还是选课请求
+#     if "action" not in data:
+#         return jsonify(
+#             {
+#                 "status": "failed",
+#                 "message": "Invalid request format",
+#             }
+#         )
+
+#     action = data["action"]
+
+#     if action == "get_schedule":
+#         # 课程查询请求
+#         partial_schedule = user_manager.get_partial_open_course(
+#             cursor=cursor,
+#             start_position=0,
+#             length=40,
+#             kch=data["course_info"]["kch"],
+#             kcm=data["course_info"]["kcm"],
+#             xf=data["course_info"]["xf"],
+#             jsh=data["course_info"]["jsh"],
+#             jsxm=data["course_info"]["jsxm"],
+#             sksj=data["course_info"]["sksj"],
+#         )
+#         print(partial_schedule)
+#         return partial_schedule
+
+#     elif action == "enroll":
+#         # 选课请求
+#         response = user_manager.enroll_student_course(
+#             cursor,
+#             xh=xh,
+#             kch=data["course_info"]["kch"],
+#             jsh=data["course_info"]["jsh"],
+#         )
+#         return response
+
+#     return jsonify(
+#         {
+#             "status": "failed",
+#             "message": "Invalid action",
+#         }
+#     )
+
+
+
+
+
+# 学生教室使用查询路由
+@app.route(
+    "/ClassRoom_Inquire/",
+    methods=["POST"],
+    endpoint="/ClassRoom_Inquire/",
+)
+#@auth_manager.token_required("S")
+@db_manager.connect_db
+def classroom_exist_find(cursor):
+    data = request.get_json()
+    print("qian data = ", data)
+    # 教室查询请求
+    classroom_exist = user_manager.get_classroom(
+        cursor=cursor,
+        # start_position=0,
+        # length=40,
+        crno=data.get("CRno", ""),
+        crtime=data.get("CRtime", ""),
+        cno=data.get("Cno", ""),
+        ctno=data.get("Ctno", "")
+    )
+    # print("qian course_exist_find = ", course_exist)
+    # 返回已选课程信息的 JSON 响应
+    return jsonify(classroom_exist)
+
+
+
 
 
 # 教师接口

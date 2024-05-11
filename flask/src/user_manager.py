@@ -83,19 +83,19 @@ class UserManager:
     def verify_credentials(self, cursor, username, password):
         """验证用户凭据并返回用户类型"""
         # 查询管理员表
-        query_admin = "SELECT Ano FROM Admin WHERE Ano = %s AND Akey = %s"
+        query_admin = """SELECT "Ano" FROM "Admin" WHERE "Ano" = %s AND "Akey" = %s"""
         cursor.execute(query_admin, (username, password))
         if cursor.rowcount > 0:
             return "A"
 
         # 查询教师表
-        query_teacher = "SELECT Tno FROM Teacher WHERE Tno = %s AND Tkey = %s"
+        query_teacher = """SELECT "Tno" FROM "Teacher" WHERE "Tno" = %s AND "Tkey" = %s"""
         cursor.execute(query_teacher, (username, password))
         if cursor.rowcount > 0:
             return "T"
 
         # 查询学生表
-        query_student = "SELECT Sno FROM Student WHERE Sno = %s AND Skey = %s"
+        query_student = """SELECT "Sno" FROM "Student" WHERE "Sno" = %s AND "Skey" = %s"""
         cursor.execute(query_student, (username, password))
         if cursor.rowcount > 0:
             return "S"
@@ -118,7 +118,7 @@ class UserManager:
 
     def __get_admin_info(self, cursor, username):
         """获取管理员信息"""
-        query = "SELECT Ano, Akey FROM Admin WHERE Ano = %s"
+        query = """SELECT "Ano", "Akey" FROM "Admin" WHERE "Ano" = %s"""
         cursor.execute(query, (username,))
         row = cursor.fetchone()
         if row:
@@ -132,7 +132,7 @@ class UserManager:
 
     def __get_teacher_info(self, cursor, username):
         """获取教师信息"""
-        query = "SELECT Tno, Tkey FROM Teacher WHERE Tno = %s"
+        query = """SELECT "Tno", "Tkey" FROM "Teacher" WHERE "Tno" = %s"""
         cursor.execute(query, (username,))
         row = cursor.fetchone()
         if row:
@@ -147,7 +147,7 @@ class UserManager:
 
     def __get_student_info(self, cursor, username):
         """获取学生信息"""
-        query = "SELECT Sno, Skey FROM Student WHERE Sno = %s"
+        query = """SELECT "Sno", "Skey" FROM "Student" WHERE "Sno" = %s"""
         cursor.execute(query, (username,))
         row = cursor.fetchone()
         if row:
@@ -202,15 +202,15 @@ class UserManager:
     def student_scredit_complete_situation(self, cursor, sno):
         query = """
             SELECT
-                Scredit.Cno,
-                Course.Cname,
-                Course.Credit
+                "Scredit"."Cno",
+                "Course"."Cname",
+                "Course"."Credit"
             FROM
-                Scredit
+                "Scredit"
             JOIN
-                Course ON Course.Cno = Scredit.Cno
+                "Course" ON "Course"."Cno" = "Scredit"."Cno"
             WHERE
-                Scredit.Sno = %(sno)s
+                "Scredit"."Sno" = %(sno)s
         """
         parameters = {'sno': sno}
         cursor.execute(query, parameters)
@@ -406,8 +406,12 @@ class UserManager:
     #         }
     #     )
     
-    #获取开设课程信息
-    def get_partial_open_course(
+    
+    
+    
+    
+    # 课程信息查询
+    def get_course(
         self,
         cursor,
         cno="",
@@ -423,40 +427,40 @@ class UserManager:
         parameters = {}
 
         if cno != "":
-            where_conditions.append("Course.Cno = %(Cno_)s")
+            where_conditions.append(""""Course"."Cno" = %(Cno_)s""")
             parameters["Cno_"] = cno
         if cname != "":
-            where_conditions.append("Course.Cname = %(Cname_)s")
+            where_conditions.append(""""Course"."Cname" = %(Cname_)s""")
             parameters["Cname_"] = cname
         if credit != "":
-            where_conditions.append("Course.Credit = %(Credit_)s")
+            where_conditions.append(""""Course"."Credit" = %(Credit_)s""")
             parameters["Credit_"] = credit
         if ctno != "":
-            where_conditions.append("Course.Ctno = %(Ctno_)s")
+            where_conditions.append(""""Course"."Ctno" = %(Ctno_)s""")
             parameters["Ctno_"] = ctno
         if tname != "":
-            where_conditions.append("Teacher.tname = %(Tname_)s")
+            where_conditions.append(""""Teacher"."tname" = %(Tname_)s""")
             parameters["Tname_"] = tname
         if crtime != "":
-            where_conditions.append("ClassRoom.crtime = %(CRtime_)s")
+            where_conditions.append(""""ClassRoom"."crtime" = %(CRtime_)s""")
             parameters["CRtime_"] = crtime
 
         
         # 构建 SQL 查询分页的语句
         schedule_query = """
             SELECT
-                Course.Cno,
-                Course.Cname,
-                Course.Credit,
-                Course.Ctno,
-                Teacher.Tname,
-                ClassRoom.CRtime
+                "Course"."Cno",
+                "Course"."Cname",
+                "Course"."Credit",
+                "Course"."Ctno",
+                "Teacher"."Tname",
+                "ClassRoom"."CRtime"
             FROM
-                Course
+                "Course"
             JOIN
-                Teacher ON Teacher.Tno = Course.Tno
+                "Teacher" ON "Teacher"."Tno" = "Course"."Tno"
             JOIN
-                Classroom ON ClassRoom.Cno = Course.Cno
+                "ClassRoom" ON "ClassRoom"."Cno" = "Course"."Cno"
         """
         if where_conditions:
             schedule_query += " WHERE " + " AND ".join(where_conditions)
@@ -477,25 +481,30 @@ class UserManager:
         ]
         # 将结果返回
         return course_exist_
-
+    
+    
+    
+    
+    
+    # 学生项目查询
     def get_project(self, cursor, sno):
         # 查询项目信息
         proj_query = """
             SELECT
-                Project.Pno,
-                Project.Pname,
-                Project.Sno,
-                Student.Sname,
-                Project.Tno,
-                Teacher.Tname
+                "Project"."Pno",
+                "Project"."Pname",
+                "Project"."Sno",
+                "Student"."Sname",
+                "Project"."Tno",
+                "Teacher"."Tname"
             FROM
-                Project
+                "Project"
             JOIN
-                Student ON Student.Sno = Project.Sno
+                "Student" ON "Student"."Sno" = "Project"."Sno"
             JOIN
-                Teacher ON Teacher.Tno = Project.Tno
+                "Teacher" ON "Teacher"."Tno" = "Project"."Tno"
             WHERE
-                Project.Sno = %(sno)s
+                "Project"."Sno" = %(sno)s
         """
         proj_parameters = {'sno': sno}
         cursor.execute(proj_query, proj_parameters)
@@ -518,10 +527,10 @@ class UserManager:
         for proj in project_info:
             pno = proj['Pno']
             proj_mem_query = """
-                SELECT ProjMen.Sno, Student.Sname
-                FROM ProjMen
-                JOIN Student ON ProjMen.Sno = Student.Sno
-                WHERE Pno = %(pno)s
+                SELECT "ProjMen"."Sno", "Student"."Sname"
+                FROM "ProjMen"
+                JOIN "Student" ON "ProjMen"."Sno" = "Student"."Sno"
+                WHERE "Pno" = %(pno)s
             """
             proj_mem_parameters = {'pno': pno}
             cursor.execute(proj_mem_query, proj_mem_parameters)
@@ -533,7 +542,75 @@ class UserManager:
             ]
 
         return project_info
+    
+    
+    
+    
+    
+    # 学生教室查询
+    def get_classroom(
+        self,
+        cursor,
+        crno="",
+        crtime="",
+        cno="",
+        ctno="",
+    ):
 
+        # 添加约束条件
+        where_conditions = []
+        parameters = {}
+
+        if crno != "":
+            where_conditions.append(""""ClassRoom"."CRno" = %(CRno_)s""")
+            parameters["CRno_"] = crno
+        if crtime != "":
+            where_conditions.append(""""ClassRoom"."CRtime" = %(CRtime_)s""")
+            parameters["CRtime_"] = crtime
+        if cno != "":
+            where_conditions.append(""""ClassRoom"."Cno" = %(Cno_)s""")
+            parameters["Cno_"] = cno
+        if ctno != "":
+            where_conditions.append(""""ClassRoom"."Ctno" = %(Ctno_)s""")
+            parameters["Ctno_"] = ctno
+
+        
+        # 构建 SQL 查询分页的语句
+        classroom_query = """
+            SELECT
+                "ClassRoom"."CRno",
+                "ClassRoom"."CRtime",
+                "ClassRoom"."Cno",
+                "ClassRoom"."Ctno",
+                "Teacher"."Tname",
+                "Course"."Cname"
+            FROM
+                "ClassRoom"
+            JOIN
+                "Course" ON "Course"."Cno" = "ClassRoom"."Cno" AND "Course"."Ctno" = "ClassRoom"."Ctno"
+            JOIN
+                "Teacher" ON "Teacher"."Tno" = "Course"."Tno"
+        """
+        if where_conditions:
+            classroom_query += " WHERE " + " AND ".join(where_conditions)
+
+        cursor.execute(classroom_query, parameters)
+        rows = cursor.fetchall()
+        classroom_exist_ = [
+            {
+                "CRno": row[0],
+                "CRtime": row[1],
+                "Cno": row[2],
+                "Ctno": row[3],
+                "Tname": row[4],
+                "Cname": row[5],
+            }
+            for row in rows
+        ]
+        # 将结果返回
+        return classroom_exist_
+        
+        
         
     # 教师方法
 
