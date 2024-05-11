@@ -547,6 +547,90 @@ class UserManager:
     
     
     
+    # 学生项目创建
+    def insert_project_into_database(
+        self, 
+        cursor, 
+        pname="", 
+        psno_leader="", 
+        ptno="", 
+        psno_members=""
+        ):
+        try:
+            # 生成项目号 pno
+            # 获取指导老师的学院号 Cono 
+            # cursor.fetchone()[0]执行了数据库查询并提取了结果集中的第一行的第一个值。
+            # 在这个上下文中，它是从数据库中获取了指导老师的学院号 Cono。 
+            # fetchone() 方法用于检索结果集中的下一行，而 [0] 用于提取该行的第一个列的值。
+            cursor.execute(
+                """
+                SELECT "Cono" FROM "Teacher" WHERE "Teacher"."Tno" = %(ptno)s
+                """, 
+                {"ptno": ptno}
+            )
+            cono = cursor.fetchone()[0]
+
+            # 获取当前 Project 表中项目数量
+            #在这句代码中，1:04 是一个字符串格式化的操作，它指定了输出的格式。具体来说，{project_count + 1:04} 的含义如下：
+            #project_count + 1 是要格式化的值，表示当前项目数量加一。
+            #:04 指定了输出的格式。04 表示输出的数字要占据至少四个位置，如果数字不够四位，则用零填充左侧以达到指定的宽度。
+            #所以，这段代码的作用是将 project_count + 1 格式化为至少四位的字符串，不足四位的部分用零填充。
+            cursor.execute(
+                """
+                    SELECT COUNT(*) FROM "Project"
+                """
+            )
+            project_count = cursor.fetchone()[0]
+
+            # 构建项目编号 pno
+            pno = f"{cono}{psno_leader[6:]}{project_count + 1:04}"
+
+            # 插入数据到 Project 表
+            cursor.execute(
+                """
+                INSERT INTO "Project" ("Pno", "Pname", "Sno", "Tno")
+                VALUES (%(pno)s, %(pname)s, %(psno_leader)s, %(ptno)s)
+                """,
+                {"pno": pno, "pname": pname, "psno_leader": psno_leader, "ptno": ptno},
+            )
+
+            # 插入数据到 ProjMen 表
+            for psno_member in psno_members:
+                cursor.execute(
+                    """
+                    INSERT INTO "ProjMen" ("Pno", "Sno")
+                    VALUES (%(pno)s, %(psno_member)s)
+                    """,
+                    {"pno": pno, "psno_member": psno_member},
+                )
+
+            # 提交事务，事务用来确保一系列的数据库操作要么全部成功执行，要么全部回滚（撤销），以保持数据的一致性和完整性
+            cursor.connection.commit()
+
+            # 返回所需的信息
+            return {
+                "Info": {"Pname": pname, "PSno": psno_members},
+                "PTno": ptno,
+                "flag": "1"  # 表示操作成功
+            }
+        except Exception as e:
+            # 如果出现异常，回滚事务
+            cursor.connection.rollback()
+
+            # 返回失败的信息
+            return {
+                "Info": {"Pname": pname, "PSno": psno_members},
+                "PTno": ptno,
+                "flag": "0",  # 表示操作失败
+                "message": str(e)  # 返回异常信息
+            }
+
+        
+    
+    
+    
+    
+    
     # 学生教室查询
     def get_classroom(
         self,
@@ -612,6 +696,181 @@ class UserManager:
         
         
         
+        
+    
+    #会议室查询    
+    def get_meetingroom_situation(self, cursor, mrno):
+        try:
+            # 执行查询操作
+            cursor.execute(
+                """
+                SELECT "MRno", "MRtime"
+                FROM "MeetingRoomS"
+                WHERE "MRno" = %(mrno)s
+                UNION
+                SELECT "MRno", "MRtime"
+                FROM "MeetingRoomT"
+                WHERE "MRno" = %(mrno)s
+                UNION
+                SELECT "MRno", "MRtime"
+                FROM "MeetingRoomA"
+                WHERE "MRno" = %(mrno)s
+                ORDER BY "MRtime"
+                """,
+                {"mrno": mrno}
+            )
+            # 获取查询结果
+            rows = cursor.fetchall()
+
+            # 将查询结果进行格式化
+            meetingroom_situation = [
+                {
+                    "MRno": row[0],
+                    "MRtime": row[1]
+                }
+                for row in rows
+            ]
+
+            # 返回查询结果
+            return meetingroom_situation
+        except Exception as e:
+            # 如果出现异常，返回错误消息
+            return {"message": str(e)}
+
+    
+    
+    
+    
+    # 会议室预约
+    def meetingroom_order(self, cursor, mrno="", mrtime="", uno=""):
+        # 根据 Uno 判断身份是学生、教师还是管理员
+        identity = uno[0]  # 获取学号/工号/管理员号的首位数字
+        
+        # 插入数据到不同的表格中
+        if identity == '2':  # 学生
+            table_name = "MeetingRoomS"
+            column_names = ["MRno", "Sno", "MRtime"]
+        elif identity == '1':  # 教师
+            table_name = "MeetingRoomT"
+            column_names = ["MRno", "Tno", "MRtime"]
+        elif identity == '0':  # 管理员
+            table_name = "MeetingRoomA"
+            column_names = ["MRno", "Ano", "MRtime"]
+        # else:
+        #     return {
+        #         "flag": "0",
+        #         "message": "Invalid identity provided."
+        #     }
+
+        # 插入数据到对应的表格中
+        try:
+            cursor.execute(
+                f"""
+                INSERT INTO "{table_name}" ("MRno", "{column_names[1]}", "MRtime")
+                VALUES (%(mrno)s, %(uno)s, %(mrtime)s)
+                """,
+                {"mrno": mrno, "uno": uno, "mrtime": mrtime},
+            )
+            # 提交事务
+            cursor.connection.commit()
+
+            # 返回成功信息
+            return {
+                "Info": {"MRno": mrno, "MRtime": mrtime, "Uno": uno},
+                "flag": "1"
+            }
+        except Exception as e:
+            # 如果出现异常，回滚事务
+            cursor.connection.rollback()
+            # 返回错误信息
+            return {"message": str(e)}
+
+
+
+
+
+    # 我的会议室查询
+    def get_my_meetingroom_S(
+        self,
+        cursor,
+        mrno = "",
+        mrtime = "",
+        sno = ""
+    ):
+
+        # 添加约束条件
+        where_conditions = []
+        parameters = {}
+
+        if mrno != "":
+            where_conditions.append(""""MeetingRoomS"."MRno" = %(MRno_)s""")
+            parameters["MRno_"] = mrno
+        if mrtime != "":
+            where_conditions.append(""""MeetingRoomS"."MRtime" = %(MRtime_)s""")
+            parameters["MRtime_"] = mrtime
+        if sno != "":
+            where_conditions.append(""""MeetingRoomS"."Sno" = %(Sno_)s""")
+            parameters["Sno_"] = sno
+
+        
+        # 构建 SQL 查询分页的语句
+        meeting_query = """
+            SELECT
+                "MeetingRoomS"."MRno",
+                "MeetingRoomS"."Sno",
+                "MeetingRoomS"."MRtime"
+            FROM
+                "MeetingRoomS"
+        """
+        if where_conditions:
+            meeting_query += " WHERE " + " AND ".join(where_conditions)
+
+        cursor.execute(meeting_query, parameters)
+        rows = cursor.fetchall()
+        my_meetingroom_query_ = [
+            {
+                "MRno": row[0],
+                "Sno": row[1],
+                "MRtime": row[2]
+            }
+            for row in rows
+        ]
+        # 将结果返回
+        return my_meetingroom_query_
+    
+    
+    
+    
+    
+    def meetingroom_delete_S(self, cursor, mrno="", sno=""):
+        # 检查参数是否都有值，如果不是则返回消息
+        if not mrno or not sno:
+            return {"MRno": mrno, "Sno": sno, "flag": "0", "message": "Both MRno and Sno must be provided for deletion."}
+
+        # 构建 SQL 删除语句
+        delete_query = """
+            DELETE FROM "MeetingRoomS"
+            WHERE "MRno" = %(MRno)s AND "Sno" = %(Sno)s
+        """
+
+        # 执行删除操作
+        cursor.execute(delete_query, {"MRno": mrno, "Sno": sno})
+
+        # 检查是否成功删除
+        if cursor.rowcount > 0:
+            # 提交事务
+            cursor.connection.commit()
+            return {"MRno": mrno, "Sno": sno, "flag": "1"}
+        else:
+            # 如果出现异常，回滚事务
+            cursor.connection.rollback()
+            return {"MRno": mrno, "Sno": sno, "flag": "0", "message": "Failed to delete records."}
+        
+        
+        
+        
+        
+
     # 教师方法
 
     def get_teacher_enrolled_courses(self, cursor, jsgh):
