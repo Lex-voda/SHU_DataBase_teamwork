@@ -13,9 +13,9 @@ class AuthManager:
     #接受用户名和角色（默认为 "2"，即学生）作为参数，并返回生成的 JWT
     def generate_token(self, uno, status="2"):
         #计算 JWT 的过期时间，设置为当前时间加上一小时
-        expiration_date = datetime.now() + timedelta(hours=1)
+        expiration_date = str(datetime.now() + timedelta(hours=1))
         #expiration_date = "1:00"
-        #print(expiration_date)
+        print(expiration_date)
         #生成 JWT，包含了用户名、角色和过期时间等信息，并使用密钥进行签名
         token = jwt.encode(
             {"Uno": uno, "Status": status, "Time": expiration_date},

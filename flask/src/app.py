@@ -41,7 +41,7 @@ def login(cursor):
     try:
         # 获得改用户的身份
         user_type = user_manager.verify_credentials(cursor, username, password)
-        #print(user_type)
+        print(user_type)
         # 判断是否存在该用户
         if user_type is not None:
             # 获取用户完整数据
@@ -76,7 +76,7 @@ def login(cursor):
             )
 
     except Exception as e:
-        # print("Exception occurred:", str(e))
+        print("Exception occurred:", str(e))
         return (
             jsonify(
                 {
