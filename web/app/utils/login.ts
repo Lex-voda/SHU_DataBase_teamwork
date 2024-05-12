@@ -9,7 +9,7 @@ async function signInClicked(uno: string, password: string) {
       return process.env.NEXT_PUBLIC_STATUS;
     }
     let result='failed';
-    axios
+    await axios
       .post(`${process.env.NEXT_PUBLIC_HOST}/Login`, {
         Uno: uno,
         Key: sha256(password),
@@ -17,7 +17,7 @@ async function signInClicked(uno: string, password: string) {
       .then((res) => {
         console.log(res)
         if (res.status === 200) {
-          if (res.data.flag) {
+          if (res.data.flag == "True") {
             success("登陆成功");
             localStorage.setItem(
               "dbuserInfo",
@@ -26,7 +26,7 @@ async function signInClicked(uno: string, password: string) {
                 status: res.data.status,
               })
             );
-            localStorage.setItem("dbAuthorization", res.data.RequestHeader);
+            localStorage.setItem("dbAuthorization", res.data.Authorization);
             result= res.data.status;
           } else {
             error("登录失败！");

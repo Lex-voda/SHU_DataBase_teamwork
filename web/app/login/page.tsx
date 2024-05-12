@@ -35,6 +35,7 @@ const Login = () => {
     try {
       setIsLoading(true);
       let response=await signInClicked(username, password);
+      console.log('response:', response);
       setIsLoading(false);
       if(response==='S'){
         router.push('/student')
