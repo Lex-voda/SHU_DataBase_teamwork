@@ -37,16 +37,18 @@ class AuthManager:
                     )
                 try:
                     data = jwt.decode(token, self.secret_key, algorithms=["HS256"])
+                    # print(data)
                     current_user = data["Uno"]
                     user_status = data["Status"]
-                    if permission != self.ROLE_PERMISSIONS[int(user_status)]:
+                    if user_status != self.ROLE_PERMISSIONS[int(permission)]:
                         return (
                             jsonify(
                                 {"flag": "failed", "message": "Permission denied!"}
                             ),
                             403,
                         )
-                except:
+                except Exception as e:
+                    print("Exception occurred:", str(e))
                     return (
                         jsonify({"flag": "failed", "message": "Token is invalid!"}),
                         401,

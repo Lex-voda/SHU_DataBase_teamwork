@@ -200,14 +200,14 @@ def login(cursor):
 # 学分完成情况查询路由
 # 连接路由
 @app.route(
-    "/Scredict_Inquire/",
+    "/Scredit_Inquire",
     methods=["GET"],
-    endpoint="/Scredict_Inquire/",
+    endpoint="/Scredit_Inquire",
 )
-@auth_manager.token_required("S")
+@auth_manager.token_required("2")
 # 连接数据库
 @db_manager.connect_db
-def student_scredit_complete(cursor):
+def student_scredit_complete(cursor, current_user):
     # 获取前端发送的 JSON 表单
     data = request.get_json()
     # print("qina data = ", data)
@@ -217,7 +217,8 @@ def student_scredit_complete(cursor):
     # print("qian sno = ", sno)
     enrolled_courses = user_manager.student_scredit_complete_situation(cursor, sno)
     # print("qian enrolled_courses = ", enrolled_courses)
-    return jsonify(enrolled_courses)
+    data["Scredit"] = enrolled_courses
+    return data
 
 
 
@@ -225,15 +226,15 @@ def student_scredit_complete(cursor):
     
 # 学生课程查询路由
 @app.route(
-    "/Course_Inquire/",
+    "/Course_Inquire",
     methods=["POST"],
-    endpoint="/Course_Inquire/",
+    endpoint="/Course_Inquire",
 )
-@auth_manager.token_required("S")
+@auth_manager.token_required("2")
 @db_manager.connect_db
-def course_exist_find(cursor):
+def course_exist_find(cursor, current_user):
     data = request.get_json()
-    # print("qian data = ", data)
+    print("qian data = ", data)
     # 课程查询请求
     course_exist = user_manager.get_course(
         cursor=cursor,
@@ -246,9 +247,10 @@ def course_exist_find(cursor):
         tname=data.get("Tname", ""),
         crtime=data.get("CRtime", ""),
     )
-    # print("qian course_exist_find = ", course_exist)
+    print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return jsonify(course_exist)
+    data["Course"] = course_exist
+    return data
 
 
 
@@ -256,11 +258,11 @@ def course_exist_find(cursor):
 
 # 学生项目查询路由
 @app.route(
-    "/Project_Inquire_S/",
+    "/Project_Inquire_S",
     methods=["GET"],
-    endpoint="/Project_Inquire_S/",
+    endpoint="/Project_Inquire_S",
 )
-@auth_manager.token_required("S")
+@auth_manager.token_required("2")
 @db_manager.connect_db
 def project_exist_find(cursor):
     data = request.get_json()
