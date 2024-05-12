@@ -37,6 +37,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 			为了强调一致性，相同的函数只定义一次，删除了重复的函数说明
 			为了方便后端代码复用，在大部分重复的函数通信字典中使用Uno作为用户编号
 			注意：文档说明中为了区分，使用Sno,Tno和Uno作为说明，但实际使用的关键字以通信字典为准
+2024/5/12:	修改了被忘记的Authorization的问题，放在json里是野鸡做法
 ```
 
 
@@ -108,7 +109,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 后端：
 
 - 核对账号密码，识别正确性
-- 将用户编号+密码+登录时间拼接后做哈希，得到请求头
+- 将用户编号+密码+登录时间拼接后做哈希，得到请求头的认证 `Authorization=SHA256(Uno+Key+Time)`存放在`response.headers["Authorization"]`中
 - 记录日志
 - 返回正确性标志和用户身份
 
@@ -119,7 +120,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Login--Uno:{Uno},Key:{SHA256(Key)},statue:{statue},RequestHeader:{RequestHeader}
+--Login--Uno:{Uno},Key:{SHA256(Key)},statue:{statue},Authorization:{Authorization}
 ```
 
 通信字典：
@@ -129,8 +130,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  "Uno":"" ,
  "Key":"" ,
  "status":"" ->"A"|"T"|"S",
- "flag": "" -> {"False"|"True"},
- "RequestHeader":"":[SHA256(Uno+Key+Time)]
+ "flag": "" -> {"False"|"True"}
 }
 ```
 
@@ -150,7 +150,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 进入本页面后自动：传输 `Sno` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `Sno` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 
 后端：
@@ -163,7 +163,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Scredit|Course",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"Scredit|Course",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -187,7 +187,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 传输 `{Cno|Cname|Credit|Ctno|Tname|CRtime}` 和 `RequestHeader` 进行查询（注：查询条目是任意项可选的，允许多条目以且逻辑查询）
+- 传输 `{Cno|Cname|Credit|Ctno|Tname|CRtime}` 和 `Authorization` 进行查询（注：查询条目是任意项可选的，允许多条目以且逻辑查询）
 - 得到信息后展示表项
 
 后端：
@@ -200,7 +200,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Course|Teacher|ClassRoom",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"Course|Teacher|ClassRoom",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -231,7 +231,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 进入本页面后自动：传输 `Sno` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `Sno` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 - 申报界面：
   - 输入：项目名称，项目队员的学号，指导老师的工号
@@ -251,7 +251,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Project|ProjMem|Stedunt|Teacher",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"Project|ProjMem|Stedunt|Teacher",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -293,7 +293,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Insert--RequestHeader:{},Table:"Project|ProjMen",Info:{Info}
+--Insert--Authorization:{},Table:"Project|ProjMen",Info:{Info}
 ```
 
 通信字典：
@@ -315,7 +315,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 传输 `CRno|CRtime|Cno|Ctno` 和 `RequestHeader` 进行查询
+- 传输 `CRno|CRtime|Cno|Ctno` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 
 后端：
@@ -329,7 +329,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"ClassRoom|Teacher|Course",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"ClassRoom|Teacher|Course",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -367,7 +367,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 信息展示与预约
 
-- 进入本页面后自动：传输 ` 空查询` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 ` 空查询` 和 `Authorization` 进行查询
 
 - 得到信息后展示表项，表项设计如下：
   - 每个会议室一个展示栏，包含信息：会议室号、当日时间安排
@@ -397,7 +397,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoomS|MeetingRoomT|MeetingRoomA",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"MeetingRoomS|MeetingRoomT|MeetingRoomA",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -425,7 +425,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Insert--RequestHeader:{RequestHeader},Table:"MeetingRoomS",Info:{Info},flag:{flag}
+--Insert--Authorization:{Authorization},Table:"MeetingRoomS",Info:{Info},flag:{flag}
 ```
 
 通信字典：
@@ -450,7 +450,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"MeetingRoomS|MeetingRoomT|MeetingRoomA",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"MeetingRoomS|MeetingRoomT|MeetingRoomA",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -481,7 +481,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Delete--RequestHeader:{RequestHeader},Table:"MeetingRoomS",Key:{Info},flag:{flag}
+--Delete--Authorization:{Authorization},Table:"MeetingRoomS",Key:{Info},flag:{flag}
 ```
 
 通信字典：
@@ -502,7 +502,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 进入本页面后自动：传输 `Tno` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `Tno` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 
 后端：
@@ -515,7 +515,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Tcredit|Course",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"Tcredit|Course",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -539,7 +539,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 传输 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 和 `RequestHeader` 进行查询（注：查询条目是任意项可选的，允许多条目以且逻辑查询）
+- 传输 `{Cno|Cname|Credit|Ctno|Tname|Ctime}` 和 `Authorization` 进行查询（注：查询条目是任意项可选的，允许多条目以且逻辑查询）
 - 得到信息后展示表项
 
 后端：
@@ -553,7 +553,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 进入本页面后自动：传输 `Tno` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `Tno` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 - 申报界面：
   - 输入：项目名称，项目队员的名字、学号，指导老师的名字、工号
@@ -571,7 +571,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Project|ProjMem|Stedunt|Teacher",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"Project|ProjMem|Stedunt|Teacher",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -606,7 +606,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 传输 `CRno|CRtime|Cno|Ctno` 和 `RequestHeader` 进行查询
+- 传输 `CRno|CRtime|Cno|Ctno` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 
 后端：
@@ -624,7 +624,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 信息展示与预约
 
-- 进入本页面后自动：传输 `空查询` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `空查询` 和 `Authorization` 进行查询
 - 得到信息后展示表项，表项设计如下：
   - 每个会议室一个展示栏，包含信息：会议室号、当日时间安排
   - 时间安排用时间块展示，每个时间块代表一个课时
@@ -654,7 +654,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Insert--RequestHeader:{RequestHeader},Table:"MeetingRoomT",Info:{Info},flag:{flag}
+--Insert--Authorization:{Authorization},Table:"MeetingRoomT",Info:{Info},flag:{flag}
 ```
 
 通信字典：
@@ -685,7 +685,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Delete--RequestHeader:{RequestHeader},Table:"MeetingRoomT",Key:{Info},flag:{flag}
+--Delete--Authorization:{Authorization},Table:"MeetingRoomT",Key:{Info},flag:{flag}
 ```
 
 通信字典：
@@ -706,7 +706,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 进入本页面后自动：传输 `Sno|Sname|Grade|Sgender|Cono|Cname` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `Sno|Sname|Grade|Sgender|Cono|Cname` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 
 后端：
@@ -719,7 +719,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Student|College",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"Student|College",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -750,7 +750,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 前端：
 
-- 进入本页面后自动：传输 `Tno|Tname|Tgender|Tlevel|Cono|Cname` 和 `RequestHeader` 进行查询
+- 进入本页面后自动：传输 `Tno|Tname|Tgender|Tlevel|Cono|Cname` 和 `Authorization` 进行查询
 - 得到信息后展示表项
 
 后端：
@@ -763,7 +763,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Inquire--RequestHeader:{RequestHeader},Table:"Teacher|College",Keywords:{Keywords}
+--Inquire--Authorization:{Authorization},Table:"Teacher|College",Keywords:{Keywords}
 ```
 
 通信字典：
@@ -796,7 +796,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
 - 信息展示与查询
 
-  - 进入本页面后自动：传输 ` 空查询` 和 `RequestHeader` 进行查询
+  - 进入本页面后自动：传输 ` 空查询` 和 `Authorization` 进行查询
 
   - 得到信息后展示表项
 
@@ -822,7 +822,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Insert--RequestHeader:{RequestHeader},Table:"MeetingRoomA",Info:{Info},flag:{flag}
+--Insert--Authorization:{Authorization},Table:"MeetingRoomA",Info:{Info},flag:{flag}
 ```
 
 通信字典：
@@ -853,7 +853,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 日志：
 
 ```
---Delete--RequestHeader:{RequestHeader},Table:"MeetingRoomA",Key:{Info},flag:{flag}
+--Delete--Authorization:{Authorization},Table:"MeetingRoomA",Key:{Info},flag:{flag}
 ```
 
 通信字典：
