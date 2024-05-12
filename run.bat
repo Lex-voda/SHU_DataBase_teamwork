@@ -1,5 +1,5 @@
 @echo off
 call conda.bat activate base
-start cmd /k "python flask/src/app.py"
+start powershell -Command "python flask/src/app.py; pause"
 
-start cmd /k "cd web && npm run dev"
+start powershell -Command "cd web; npm run dev; pause"
