@@ -25,12 +25,12 @@ interface ClassroomType {
 }
 
 const columns = [
-    { name: "CRno", iid: "CRno" },
-    { name: "Cname", iid: "Cname" },
-    { name: "Cno", iid: "Cno" },
-    { name: "Ctno", iid: "Ctno" },
-    { name: "CRtime", iid: "CRtime" },
-    { name: "Tname", iid: "Tname" },
+    { name: "教室号", iid: "CRno" },
+    { name: "课程名称", iid: "Cname" },
+    { name: "课程号", iid: "Cno" },
+    { name: "课程教室编号", iid: "Ctno" },
+    { name: "课程时间", iid: "CRtime" },
+    { name: "教师姓名", iid: "Tname" },
 ];
 
 export default function App() {
@@ -101,7 +101,7 @@ export default function App() {
         } else {
             try {
                 API.StudentServiceApi.getClassRoom({
-                    KeyWords: {
+                    Keywords: {
                         CRno: crno,
                         Cno: cno,
                         Ctno: ctno,
@@ -145,21 +145,21 @@ export default function App() {
             <div className="w-full text-start text-3xl font-bold">教室信息查询</div>
             <div className="flex gap-4">
                 <div className="flex flex-wrap gap-4 w-[75%]">
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                         <div>课程编号</div>
-                        <Input type="text" onValueChange={setCno} value={cno} />
+                        <Input className="w-[70%]" type="text" onValueChange={setCno} value={cno} />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                         <div>教室编号</div>
-                        <Input type="text" onValueChange={setCrno} value={crno} />
+                        <Input className="w-[70%]" type="text" onValueChange={setCrno} value={crno} />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                         <div>教室时间</div>
-                        <Input type="text" onValueChange={setCrtime} value={crtime} />
+                        <Input className="w-[70%]" type="text" onValueChange={setCrtime} value={crtime} />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                         <div>教师编号</div>
-                        <Input type="text" onValueChange={setCtno} value={ctno} />
+                        <Input className="w-[70%]" type="text" onValueChange={setCtno} value={ctno} />
                     </div>
                 </div>
                 <div className="flex flex-col gap-6 w-[20%]">

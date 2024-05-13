@@ -33,13 +33,13 @@ interface ProjectType {
 }
 
 const columns = [
-    { name: "Pno", iid: "Pno" },
-    { name: "Pname", iid: "Pname" },
-    { name: "Sno", iid: "Sno" },
-    { name: "Sname", iid: "Sname" },
-    { name: "Tno", iid: "Tno" },
-    { name: "Tname", iid: "Tname" },
-    { name: "ProjMen", iid: "ProjMen" },
+    { name: "项目编号", iid: "Pno" },
+    { name: "项目名称", iid: "Pname" },
+    { name: "学号", iid: "Sno" },
+    { name: "学生姓名", iid: "Sname" },
+    { name: "教师工号", iid: "Tno" },
+    { name: "教师姓名", iid: "Tname" },
+    { name: "队员", iid: "ProjMen" },
 ];
 
 export default function App() {
@@ -208,7 +208,7 @@ export default function App() {
                     .then((res) => {
                         console.log(res)
                         if (res.status === 200) {
-                            if (res.data.flag === '1') {
+                            if (res.data.flag === 'True') {
                                 success("添加项目成功！");
                                 refreshProjects();
                             }
