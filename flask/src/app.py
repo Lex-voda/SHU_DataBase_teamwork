@@ -290,17 +290,17 @@ def project_insert(cursor, current_user):
     data = request.get_json()
     print("qian data = ", data)
     # 教室查询请求
-    classroom_exist = user_manager.insert_project_into_database(
+    Project_insert_flag = user_manager.insert_project_into_database(
         cursor=cursor,
         # 提取项目名、组长学号、老师工号和组员学号列表
         pname = data["Info"]["Pname"],
         psno_leader = data["Info"]["PSno"][0],  # 第一个元素为组长学号
         ptno = data["PTno"],
         psno_members = data["Info"]["PSno"][1:],  # 剩余元素为组员学号列表
-    )
+    )["flag"]
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    data["flag"]=classroom_exist["flag"]
+    data["flag"]=Project_insert_flag
     return data
 
 
@@ -330,7 +330,7 @@ def classroom_exist_find(cursor, current_user):
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    data["Classroom"] = classroom_exist
+    data["ClassRoom"] = classroom_exist
     return data
 
 
