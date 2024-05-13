@@ -21,9 +21,9 @@ interface ScreditType {
 }
 
 const columns = [
-  { name: "Cno", iid: "Cno" },
-  { name: "Sno", iid: "Sno" },
-  { name: "Pass", iid: "Pass" },
+  { name: "课程号", iid: "Cno" },
+  { name: "学号", iid: "Sno" },
+  { name: "是否通过", iid: "Pass" },
 ];
 
 export default function App() {

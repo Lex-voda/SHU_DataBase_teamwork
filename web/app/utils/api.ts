@@ -1,6 +1,12 @@
 import { type AxiosResponse } from "axios";
 import instance from "./request";
 
+interface getScreditReq{
+  Keywords: {
+    Sno: string;
+  }
+}
+
 interface getScreditRes {
   Scredit: Array<{
     Sno: string;
@@ -10,7 +16,7 @@ interface getScreditRes {
 }
 
 interface getCourseReq {
-  KeyWords: {
+  Keywords: {
     Cno: string;
     Cname: string;
     Credit: string;
@@ -61,11 +67,11 @@ interface postProjectReq {
 }
 
 interface postProjectRes {
-  flag: '1' | '0';
+  flag: 'True' | 'False';
 }
 
 interface getClassRoomReq {
-  KeyWords: {
+  Keywords: {
     CRno: string;
     Cno: string;
     Ctno: string;
@@ -85,38 +91,63 @@ interface getClassRoomRes {
 }
 
 interface getMeetingRoomReq {
-  KeyWords: {
+  Keywords: {
     MRno: string;
-    MRtime: string;
   }
 }
 
 interface getMeetingRoomRes {
   MeetingRoom: Array<{
     MRno: string;
-    MRtime: string;
+    MRtime: Array<string>;
+    Uno: Array<string>;
   }>
 }
 
 interface postMeetingRoomReq {
   Info: {
     MRno: string;
-    MRtime: string;
-    Sno: string;
+    MRtime: Array<string>;
+    Uno: Array<string>;
   }
 }
 
 interface postMeetingRoomRes {
-  flag: '1' | '0';
+  flag: 'True' | 'False';
+}
+
+interface getMyMeetingRoomReq {
+  Keywords: {
+    Uno: string;
+  }
+}
+
+interface getMyMeetingRoomRes {
+  MeetingRoom: Array<{
+    MRno: string;
+    MRtime: Array<string>;
+    Uno: Array<string>;
+  }>
+}
+
+interface cancelMeetingRoomReq {
+  Key: {
+    MRno: string;
+    Uno: string;
+  }
+}
+
+interface cancelMeetingRoomRes {
+  flag: 'True' | 'False';
 }
 
 const StudentServiceApi = {
-  getScredit: async (Uno: string) =>
-    await instance.get<any, AxiosResponse<Partial<getScreditRes>>>(
+  getScredit: async (Sno: string) =>
+    await instance.post<getScreditReq, AxiosResponse<Partial<getScreditRes>>>(
       "/Scredit_Inquire",
       {
-        params: {
-          Uno: Uno,
+        Keywords: {
+          Sno: Sno,
         },
       }
     ),
@@ -126,10 +157,10 @@ const StudentServiceApi = {
       data
     ),
   getProject: async (Sno: string) =>
-    await instance.get<any, AxiosResponse<Partial<getProjectRes>>>(
+    await instance.post<getScreditReq, AxiosResponse<Partial<getProjectRes>>>(
       "/Project_Inquire",
       {
-        params: {
+        Keywords: {
           Sno: Sno,
         },
       }
@@ -151,7 +182,17 @@ const StudentServiceApi = {
     ),
   postMeetingRoom: async (data: Partial<postMeetingRoomReq>) =>
     await instance.post<postMeetingRoomReq, AxiosResponse<Partial<postMeetingRoomRes>>>(
-      "/MeetingRoomS_Inser_S",
+      "/MeetingRoomS_Insert_S",
+      data
+    ),
+  getMyMeetingRoom: async (data: Partial<getMyMeetingRoomReq>) =>
+    await instance.post<getMyMeetingRoomReq, AxiosResponse<Partial<getMyMeetingRoomRes>>>(
+      "/My_MeetingRoom_Inquire",
+      data
+    ),
+  cancelMeetingRoom: async (data: Partial<cancelMeetingRoomReq>) =>
+    await instance.post<cancelMeetingRoomReq, AxiosResponse<Partial<cancelMeetingRoomRes>>>(
+      "/My_MeetingRoom_Delete_S",
       data
     ),
 };

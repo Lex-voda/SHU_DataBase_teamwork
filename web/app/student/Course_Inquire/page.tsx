@@ -25,12 +25,12 @@ interface CourseType {
 }
 
 const columns = [
-    { name: "Cno", iid: "Cno" },
-    { name: "Cname", iid: "Cname" },
-    { name: "Credit", iid: "Credit" },
-    { name: "Ctno", iid: "Ctno" },
-    { name: "Ctime", iid: "Ctime" },
-    { name: "Tname", iid: "Tname" },
+    { name: "课程号", iid: "Cno" },
+    { name: "课程名称", iid: "Cname" },
+    { name: "学分", iid: "Credit" },
+    { name: "课程教师编号", iid: "Ctno" },
+    { name: "课程时间", iid: "Ctime" },
+    { name: "教师姓名", iid: "Tname" },
 ];
 
 export default function App() {
@@ -103,7 +103,7 @@ export default function App() {
         } else {
             try {
                 API.StudentServiceApi.getCourse({
-                    KeyWords: {
+                    Keywords: {
                         Cno: cno,
                         Cname: cname,
                         Credit: credit,
@@ -148,30 +148,30 @@ export default function App() {
     return (
         <div className="w-full h-screen flex flex-col gap-6 justify-center items-center px-28">
             <div className="w-full text-start text-3xl font-bold">课程信息查询</div>
-            <div className="flex flex-wrap gap-4">
-                <div className="flex gap-2">
+            <div className="flex flex-wrap gap-4 w-full">
+                <div className="flex gap-2 items-center">
                     <div>课程编号</div>
-                    <Input type="text" onValueChange={setCno} value={cno} />
+                    <Input className="w-[70%]" type="text" onValueChange={setCno} value={cno} />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <div>课程名称</div>
-                    <Input type="text" onValueChange={setCname} value={cname} />
+                    <Input className="w-[70%]" type="text" onValueChange={setCname} value={cname} />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <div>学分</div>
-                    <Input type="text" onValueChange={setCredit} value={credit} />
+                    <Input className="w-[70%]" type="text" onValueChange={setCredit} value={credit} />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <div>教师编号</div>
-                    <Input type="text" onValueChange={setCtno} value={ctno} />
+                    <Input className="w-[70%]" type="text" onValueChange={setCtno} value={ctno} />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <div>教师姓名</div>
-                    <Input type="text" onValueChange={setTname} value={tname} />
+                    <Input className="w-[70%]" type="text" onValueChange={setTname} value={tname} />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <div>上课时间</div>
-                    <Input type="text" onValueChange={setCtime} value={ctime} />
+                    <Input className="w-[70%]" type="text" onValueChange={setCtime} value={ctime} />
                 </div>
             </div>
             <div className="flex gap-6">

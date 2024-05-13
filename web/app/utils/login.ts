@@ -5,10 +5,10 @@ import sha256 from './sha256.js';
 async function signInClicked(uno: string, password: string) {
   try {
     // console.log(sha256(password));
-    if(process.env.NEXT_PUBLIC_TEST === "test"){
+    if (process.env.NEXT_PUBLIC_TEST === "test") {
       return process.env.NEXT_PUBLIC_STATUS;
     }
-    let result='failed';
+    let result = 'failed';
     await axios
       .post(`${process.env.NEXT_PUBLIC_HOST}/Login`, {
         Uno: uno,
@@ -17,7 +17,7 @@ async function signInClicked(uno: string, password: string) {
       .then((res) => {
         console.log(res)
         if (res.status === 200) {
-          if (res.data.flag == "True") {
+          if (res.data.flag == "True" === 'True') {
             success("登陆成功");
             localStorage.setItem(
               "dbuserInfo",
