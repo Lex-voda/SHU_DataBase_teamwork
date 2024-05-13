@@ -318,7 +318,7 @@ def project_insert(cursor, current_user):
 def classroom_exist_find(cursor, current_user):
     data = request.get_json()
     print("qian data = ", data)
-    keywords = data["KeyWords"]
+    keywords = data["Keywords"]
     # 教室查询请求
     classroom_exist = user_manager.get_classroom(
         cursor=cursor,
@@ -333,9 +333,6 @@ def classroom_exist_find(cursor, current_user):
     # 返回已选课程信息的 JSON 响应
     data["ClassRoom"] = classroom_exist
     return data
-
-
-
 
 
 # 会议室查询路由
