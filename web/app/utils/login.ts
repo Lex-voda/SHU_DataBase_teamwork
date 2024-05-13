@@ -17,7 +17,7 @@ async function signInClicked(uno: string, password: string) {
       .then((res) => {
         console.log(res)
         if (res.status === 200) {
-          if (res.data.flag == "True" === 'True') {
+          if (res.data.flag == "True") {
             success("登陆成功");
             localStorage.setItem(
               "dbuserInfo",
