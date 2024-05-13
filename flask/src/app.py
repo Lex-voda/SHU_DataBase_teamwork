@@ -318,15 +318,16 @@ def project_insert(cursor, current_user):
 def classroom_exist_find(cursor, current_user):
     data = request.get_json()
     print("qian data = ", data)
+    keywords = data["KeyWords"]
     # 教室查询请求
     classroom_exist = user_manager.get_classroom(
         cursor=cursor,
         # start_position=0,
         # length=40,
-        crno=data.get("CRno", ""),
-        crtime=data.get("CRtime", ""),
-        cno=data.get("Cno", ""),
-        ctno=data.get("Ctno", "")
+        crno=keywords.get("CRno", ""),
+        crtime=keywords.get("CRtime", ""),
+        cno=keywords.get("Cno", ""),
+        ctno=keywords.get("Ctno", "")
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
