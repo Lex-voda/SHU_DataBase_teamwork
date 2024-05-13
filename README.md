@@ -40,6 +40,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 2024/5/12:	修改了会议室查询的通信字典
 2024/5/13:	所有的flag都改为 True/Fasle
 			修改了我的预约查询的通信字典
+			所有的路由都改为POST
 ```
 
 
@@ -161,7 +162,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `Sno` 返回 `Scredit|Course` 表项中的信息（注：在 `Scredit` 标记为 `Pass=="0"` 的课程学分应0）
 - 日志记录
 
-函数路由：`Scredict_Inquire[GET]`
+函数路由：`Scredict_Inquire[POST]`
 
 日志：
 
@@ -249,7 +250,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 
   - 日志记录
 
-函数路由：`Project_Inquire_S[GET]`
+函数路由：`Project_Inquire_S[POST]`
 
 日志：
 
@@ -512,7 +513,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 - 根据 `Tno` 返回 `Tcredit|Course` 表项中的信息
 - 日志记录
 
-函数路由：`Tcredict_Inquire[GET]`
+函数路由：`Tcredict_Inquire[POST]`
 
 日志：
 
@@ -568,7 +569,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
   - 根据 `Tno` 返回 `Project|ProjMem|Stedunt|Teacher` 表项中的信息
   - 日志记录
 
-函数路由：`Project_Inquire_T[GET]`
+函数路由：`Project_Inquire_T[POST]`
 
 日志：
 
