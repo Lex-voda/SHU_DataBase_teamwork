@@ -38,6 +38,8 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 			为了方便后端代码复用，在大部分重复的函数通信字典中使用Uno作为用户编号
 			注意：文档说明中为了区分，使用Sno,Tno和Uno作为说明，但实际使用的关键字以通信字典为准
 2024/5/12:	修改了会议室查询的通信字典
+2024/5/13:	所有的flag都改为 True/Fasle
+			修改了我的预约查询的通信字典
 ```
 
 
@@ -306,7 +308,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  		"PSno":[""]
  		},
     	"PTno":"",
- "flag":"" {"0"|"1"}
+ "flag":"" {"True"|"False"}
 }
 ```
 
@@ -439,7 +441,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
         "MRtime":[""], 
         "Uno":[""] 
  		},
- "flag":"" {"0"|"1"}
+ "flag":"" {"True"|"False"}
 }
 ```
 
@@ -460,9 +462,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 ```json
 {
  "Keywords":{
-     		"Uno":"" ,
-     		"MRno":"" ,
-     		"MRtime":""
+     		"Uno":""
  			},
  "MeetingRoom":[
      			{
@@ -494,7 +494,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      	"MRno":"", 
         "Uno":"" 
  		},
- "flag":"" {"0"|"1"}
+ "flag":"" {"True"|"False"}
 }
 ```
 
@@ -668,7 +668,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
         "MRtime":[""], 
         "Uno":[""] 
  		},
- "flag":"" {"0"|"1"}
+ "flag":"" {"True"|"False"}
 }
 ```
 
@@ -698,7 +698,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      	"MRno":"", 
         "Uno":"" 
  		},
- "flag":"" {"0"|"1"}
+ "flag":"" {"True"|"False"}
 }
 ```
 
@@ -836,7 +836,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
         "MRtime":"", 
         "Uno":"" 
         },
- "flag":"" {"0"|"1"}
+ "flag":"" {"True"|"False"}
 }
 ```
 
@@ -867,6 +867,6 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
         "MRtime":"", 
         "Uno":"" 
  		},
- "flag":"" {"0"|"1"}
+ "flag":"" {"True"|"False"}
 }
 ```
