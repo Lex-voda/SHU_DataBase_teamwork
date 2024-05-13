@@ -264,7 +264,7 @@ def course_exist_find(cursor, current_user):
 )
 @auth_manager.token_required("2")
 @db_manager.connect_db
-def project_exist_find(cursor):
+def project_exist_find(cursor, current_user):
     data = request.get_json()
     # print("qian data = ", data)
     sno = data["Sno"]
@@ -280,13 +280,13 @@ def project_exist_find(cursor):
 
 # 学生新建项目路由
 @app.route(
-    "/Project_Insert/",
+    "/Project_Insert",
     methods=["POST"],
-    endpoint="/Project_Insert/",
+    endpoint="/Project_Insert",
 )
-@auth_manager.token_required("S")
+@auth_manager.token_required("2")
 @db_manager.connect_db
-def project_insert(cursor):
+def project_insert(cursor, current_user):
     data = request.get_json()
     print("qian data = ", data)
     # 教室查询请求
@@ -300,7 +300,8 @@ def project_insert(cursor):
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return jsonify(classroom_exist)
+    data["flag"]=classroom_exist["flag"]
+    return data
 
 
 
@@ -308,13 +309,13 @@ def project_insert(cursor):
 
 # 学生教室使用查询路由
 @app.route(
-    "/ClassRoom_Inquire/",
+    "/ClassRoom_Inquire",
     methods=["POST"],
-    endpoint="/ClassRoom_Inquire/",
+    endpoint="/ClassRoom_Inquire",
 )
-@auth_manager.token_required("S")
+@auth_manager.token_required("2")
 @db_manager.connect_db
-def classroom_exist_find(cursor):
+def classroom_exist_find(cursor, current_user):
     data = request.get_json()
     print("qian data = ", data)
     # 教室查询请求
@@ -329,7 +330,8 @@ def classroom_exist_find(cursor):
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return jsonify(classroom_exist)
+    data["Classroom"] = classroom_exist
+    return data
 
 
 
@@ -337,9 +339,9 @@ def classroom_exist_find(cursor):
 
 # 会议室查询路由
 @app.route(
-    "/MeetingRoom_Inquire/",
+    "/MeetingRoom_Inquire",
     methods=["POST"],
-    endpoint="/MeetingRoom_Inquire/",
+    endpoint="/MeetingRoom_Inquire",
 )
 @db_manager.connect_db
 def meetingroom_inquire_rute(cursor):
@@ -352,7 +354,8 @@ def meetingroom_inquire_rute(cursor):
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return jsonify(meetingroom_situation)
+    data["MeetingRoom"] = meetingroom_situation
+    return data
     
     
     
