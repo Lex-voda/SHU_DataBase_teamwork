@@ -41,6 +41,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 2024/5/13:	所有的flag都改为 True/Fasle
 			修改了我的预约查询的通信字典
 			所有的路由都改为POST
+2024/5/14:  修复了会议室字典的一些问题
 ```
 
 
@@ -440,7 +441,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  "Info":{
      	"MRno":"", 
         "MRtime":[""], 
-        "Uno":[""] 
+        "Uno":"" 
  		},
  "flag":"" {"True"|"False"}
 }
@@ -467,9 +468,9 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
  			},
  "MeetingRoom":[
      			{
-                "Uno":"" ,
+                "Uno":[""] ,
                 "MRno":"" ,
-                "MRtime":"",
+                "MRtime":[""],
                 }
  				]
 }
