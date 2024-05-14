@@ -788,58 +788,67 @@ class UserManager:
 
 
     # 我的会议室查询
-    def get_my_meetingroom_S(
-        self,
-        cursor,
-        mrno = "",
-        mrtime = "",
-        sno = ""
-    ):
+    def get_my_meetingroom_S(self, cursor, uno=""):
+        try:
+            # 检查是否提供了 Sno
+            if uno == "":
+                return {"message": "Uno is required."}
 
-        # 添加约束条件
-        where_conditions = []
-        parameters = {}
+            # 查询 MeetingRoomS 表
+            query_s = """
+                SELECT "MRno", "Sno" AS "Uno", "MRtime"
+                FROM "MeetingRoomS"
+                WHERE "Sno" = %(uno_)s
+            """
+            cursor.execute(query_s, {"uno_": uno})
+            rows_s = cursor.fetchall()
 
-        if mrno != "":
-            where_conditions.append(""""MeetingRoomS"."MRno" = %(MRno_)s""")
-            parameters["MRno_"] = mrno
-        if mrtime != "":
-            where_conditions.append(""""MeetingRoomS"."MRtime" = %(MRtime_)s""")
-            parameters["MRtime_"] = mrtime
-        if sno != "":
-            where_conditions.append(""""MeetingRoomS"."Sno" = %(Sno_)s""")
-            parameters["Sno_"] = sno
+            # 查询 MeetingRoomT 表
+            query_t = """
+                SELECT "MRno", "Tno" AS "Uno", "MRtime"
+                FROM "MeetingRoomT"
+                WHERE "Tno" = %(uno_)s
+            """
+            cursor.execute(query_t, {"uno_": uno})
+            rows_t = cursor.fetchall()
 
-        
-        # 构建 SQL 查询分页的语句
-        meeting_query = """
-            SELECT
-                "MeetingRoomS"."MRno",
-                "MeetingRoomS"."Sno",
-                "MeetingRoomS"."MRtime"
-            FROM
-                "MeetingRoomS"
-        """
-        if where_conditions:
-            meeting_query += " WHERE " + " AND ".join(where_conditions)
+            # 查询 MeetingRoomA 表
+            query_a = """
+                SELECT "MRno", "Ano" AS "Uno", "MRtime"
+                FROM "MeetingRoomA"
+                WHERE "Ano" = %(uno_)s
+            """
+            cursor.execute(query_a, {"uno_": uno})
+            rows_a = cursor.fetchall()
 
-        cursor.execute(meeting_query, parameters)
-        rows = cursor.fetchall()
-        my_meetingroom_query_ = [
-            {
-                "MRno": row[0],
-                "Sno": row[1],
-                "MRtime": row[2]
-            }
-            for row in rows
-        ]
-        # 将结果返回
-        return my_meetingroom_query_
+            # 合并查询结果
+            rows = rows_s + rows_t + rows_a
+
+            # 初始化一个字典用于存储结果
+            meetingroom_dict = {}
+            for row in rows:
+                mrno = row[0]
+                uno = row[1]
+                mrtime = row[2]
+                if mrno not in meetingroom_dict:
+                    meetingroom_dict[mrno] = {"Uno": [], "MRtime": []}
+                meetingroom_dict[mrno]["Uno"].append(uno)
+                meetingroom_dict[mrno]["MRtime"].append(mrtime)
+
+            # 返回结果字典
+            return meetingroom_dict
+        except Exception as e:
+            # 如果出现异常，返回错误消息
+            return {"message": str(e)}
+
+
+
     
     
     
     
     
+    #会议室预约删除
     def meetingroom_delete_S(self, cursor, mrno="", sno=""):
         # 检查参数是否都有值，如果不是则返回消息
         if not mrno or not sno:
@@ -858,11 +867,11 @@ class UserManager:
         if cursor.rowcount > 0:
             # 提交事务
             cursor.connection.commit()
-            return {"MRno": mrno, "Sno": sno, "flag": "1"}
+            return "True"
         else:
             # 如果出现异常，回滚事务
             cursor.connection.rollback()
-            return {"MRno": mrno, "Sno": sno, "flag": "0", "message": "Failed to delete records."}
+            return "False"
         
         
         
