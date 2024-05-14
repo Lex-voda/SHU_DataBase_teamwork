@@ -201,7 +201,7 @@ def login(cursor):
 # 连接路由
 @app.route(
     "/Scredit_Inquire",
-    methods=["GET"],
+    methods=["POST"],
     endpoint="/Scredit_Inquire",
 )
 @auth_manager.token_required("2")
@@ -213,7 +213,9 @@ def student_scredit_complete(cursor, current_user):
     # print("qina data = ", data)
     # 暂时还没有做日志系统
     #authorization = request.headers.get("Authorization")
-    sno = data["Sno"]
+    keywords = data["Keywords"]
+    #print("qian data = ", keywords)
+    sno = keywords.get("Sno", "")
     # print("qian sno = ", sno)
     enrolled_courses = user_manager.student_scredit_complete_situation(cursor, sno)
     # print("qian enrolled_courses = ", enrolled_courses)
@@ -234,20 +236,21 @@ def student_scredit_complete(cursor, current_user):
 @db_manager.connect_db
 def course_exist_find(cursor, current_user):
     data = request.get_json()
-    print("qian data = ", data)
+    keywords = data["Keywords"]
+    #print("qian data = ", keywords)
     # 课程查询请求
     course_exist = user_manager.get_course(
         cursor=cursor,
         # start_position=0,
         # length=40,
-        cno=data.get("Cno", ""),
-        cname=data.get("Cname", ""),
-        credit=data.get("Credit", ""),
-        ctno=data.get("Ctno", ""),
-        tname=data.get("Tname", ""),
-        crtime=data.get("CRtime", ""),
+        cno=keywords.get("Cno", ""),
+        cname=keywords.get("Cname", ""),
+        credit=keywords.get("Credit", ""),
+        ctno=keywords.get("Ctno", ""),
+        tname=keywords.get("Tname", ""),
+        crtime=keywords.get("CRtime", ""),
     )
-    print("qian course_exist_find = ", course_exist)
+    #print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
     data["Course"] = course_exist
     return data
@@ -259,20 +262,22 @@ def course_exist_find(cursor, current_user):
 # 学生项目查询路由
 @app.route(
     "/Project_Inquire_S",
-    methods=["GET"],
+    methods=["POST"],
     endpoint="/Project_Inquire_S",
 )
 @auth_manager.token_required("2")
 @db_manager.connect_db
 def project_exist_find(cursor, current_user):
     data = request.get_json()
-    # print("qian data = ", data)
-    sno = data["Sno"]
+    keywords = data["Keywords"]
+    # print("qian data = ", keywords)
+    sno = keywords.get("Sno", "")
     # 课程查询请求
     project_exist = user_manager.get_project(cursor, sno)
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return jsonify(project_exist)
+    data["Project"] = project_exist
+    return data
 
 
 
@@ -288,15 +293,16 @@ def project_exist_find(cursor, current_user):
 @db_manager.connect_db
 def project_insert(cursor, current_user):
     data = request.get_json()
-    print("qian data = ", data)
+    keywords = data["Info"]
+    #print("qian data = ", keywords)
     # 教室查询请求
     Project_insert_flag = user_manager.insert_project_into_database(
         cursor=cursor,
         # 提取项目名、组长学号、老师工号和组员学号列表
-        pname = data["Info"]["Pname"],
-        psno_leader = data["Info"]["PSno"][0],  # 第一个元素为组长学号
+        pname = keywords["Pname"],
+        psno_leader = keywords["PSno"][0],  # 第一个元素为组长学号
         ptno = data["PTno"],
-        psno_members = data["Info"]["PSno"][1:],  # 剩余元素为组员学号列表
+        psno_members = keywords["PSno"][1:],  # 剩余元素为组员学号列表
     )["flag"]
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
@@ -317,7 +323,7 @@ def project_insert(cursor, current_user):
 @db_manager.connect_db
 def classroom_exist_find(cursor, current_user):
     data = request.get_json()
-    print("qian data = ", data)
+    #print("qian data = ", data)
     keywords = data["Keywords"]
     # 教室查询请求
     classroom_exist = user_manager.get_classroom(
@@ -344,11 +350,13 @@ def classroom_exist_find(cursor, current_user):
 @db_manager.connect_db
 def meetingroom_inquire_rute(cursor):
     data = request.get_json()
-    print("qian data = ", data)
+    # print("qian data = ", data)
+    keywords = data["Keywords"]
+    # keyword = keywords[0]
     # 教室查询请求
     meetingroom_situation = user_manager.get_meetingroom_situation(
         cursor=cursor,
-        mrno=data.get("MRno", "")
+        mrno=keywords["MRno"]
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
@@ -359,26 +367,40 @@ def meetingroom_inquire_rute(cursor):
     
     
     
-# 会议室预约路由(自动根据输入的uno判断身份)
+# 会议室预约与续约路由(虽然使用Uno作为标签，但是这里只做插入学生表，后续只需要修改user_manager代码即可)
 @app.route(
-    "/MeetingRoomS_Inser_S/",
+    "/MeetingRoomS_Inser_S",
     methods=["POST"],
-    endpoint="/MeetingRoomS_Inser_S/",
+    endpoint="/MeetingRoomS_Inser_S",
 )
 @db_manager.connect_db
 def meetingroom_inquire_rute(cursor):
     data = request.get_json()
-    print("qian data = ", data)
+    #print("qian data = ", data)
+    info = data["Info"]
+    # 确保必要的字段存在
+    mrno = info.get("MRno")
+    mrtimes = info.get("MRtime", [])
+    uno = info.get("Uno")
     # 教室查询请求
-    meetingroom_order_result = user_manager.meetingroom_order(
-        cursor=cursor,
-        mrno= data["Info"]["MRno"],
-        mrtime = data["Info"]["MRtime"],
-        uno = data["Info"]["Uno"] 
-    )
-    # print("qian course_exist_find = ", course_exist)
+    # 生成需要插入的元组列表
+    tuples_to_insert = [(mrno, mrtime, uno) for mrtime in zip(mrtimes)]
+    # 插入每个元组到表格中
+    all_success = True
+    for mrno, mrtime, uno in tuples_to_insert:
+        result = user_manager.meetingroom_order(
+            cursor=cursor,
+            mrno=mrno,
+            mrtime=mrtime,
+            uno=uno
+        )
+        if result["flag"] == "False":
+            all_success = False
+            break
+    
     # 返回已选课程信息的 JSON 响应
-    return jsonify(meetingroom_order_result)
+    data["flag"] = "True" if all_success else "False"
+    return data
 
 
 
@@ -386,24 +408,24 @@ def meetingroom_inquire_rute(cursor):
 
 # 学生查询我的会议室预约路由（标签为Sno，文档中是Uno）
 @app.route(
-    "/My_MeetingRoom_Inquire/",
+    "/My_MeetingRoom_Inquire",
     methods=["POST"],
-    endpoint="/My_MeetingRoom_Inquire/",
+    endpoint="/My_MeetingRoom_Inquire",
 )
 @db_manager.connect_db
 def my_meetingroom_inquire_S_rute(cursor):
     data = request.get_json()
-    print("qian data = ", data)
+    keywords = data["Keywords"]
+    # print("qian data = ", data)
     # 教室查询请求
     meetingroom_order_result = user_manager.get_my_meetingroom_S(
         cursor=cursor,
-        mrno=data.get("MRno", ""),
-        mrtime=data.get("MRtime", ""),
-        sno=data.get("Sno", "")
+        sno=keywords.get("Uno", "")
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return jsonify(meetingroom_order_result)
+    data["MeetingRoom"] = meetingroom_order_result
+    return data
 
 
 
@@ -411,23 +433,25 @@ def my_meetingroom_inquire_S_rute(cursor):
 
 # 学生会议室取消预约路由
 @app.route(
-    "/My_MeetingRoom_Delete_S/",
+    "/My_MeetingRoom_Delete_S",
     methods=["POST"],
-    endpoint="/My_MeetingRoom_Delete_S/",
+    endpoint="/My_MeetingRoom_Delete_S",
 )
 @db_manager.connect_db
 def meetingroom_delete_rute(cursor):
     data = request.get_json()
-    print("qian data = ", data)
+    keywords = data["Key"]
+    # print("qian data = ", data)
     # 教室查询请求
-    meetingroom_order_result = user_manager.meetingroom_delete_S(
+    meetingroom_drop_result = user_manager.meetingroom_delete_S(
         cursor=cursor,
-        mrno= data.get("MRno", ""),
-        sno= data.get("Sno", "")
+        mrno= keywords("MRno", ""),
+        sno= keywords("Uno", "")
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    return jsonify(meetingroom_order_result)
+    data["flag"] = meetingroom_drop_result
+    return data
 
 
 

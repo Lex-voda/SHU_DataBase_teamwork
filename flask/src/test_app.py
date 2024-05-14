@@ -154,10 +154,10 @@ class TestApp(unittest.TestCase):
     # def test_meetingroom_inquire_route(self):
     #     # 构造会议室查询的 JSON 数据
     #     query_data = {
-    #         "MRno": "M101"
+    #         "Keywords": {"MRno": "M101"}
     #     }
     #     # 发送 POST 请求到会议室查询路由
-    #     response = self.app.post('/MeetingRoom_Inquire/', json=query_data)
+    #     response = self.app.post('/MeetingRoom_Inquire', json=query_data)
     #     data = response.get_json()
     #     print("try meetingroom inquire data = " ,  data)
     #     # 检查响应状态码是否为 200
@@ -171,26 +171,26 @@ class TestApp(unittest.TestCase):
     
     
     
-    # # 会议室预约测试代码
-    # def test_meetingroom_inquire_success(self):
-    #     # 构造测试数据
-    #     query_data = {
-    #         "Info": {
-    #             "MRno": "M203",
-    #             "MRtime": "二1-2",
-    #             "Uno": "01234567"
-    #         },
-    #     }
-    #     # 发送 POST 请求到会议室查询路由
-    #     response = self.app.post('/MeetingRoomS_Inser_S/', json=query_data)
-    #     data = response.get_json()
-    #     print("try project insert data = " ,  data)
-    #     # 检查响应状态码是否为 200
-    #     if response.status_code == 200:
-    #         # 打印响应内容
-    #         print("OK, Response JSON:", response.json())
-    #     else:
-    #         print("NO, Failed to retrieve data. Status code:", response.status_code)
+    # 会议室预约测试代码
+    def test_meetingroom_inquire_success(self):
+        # 构造测试数据
+        query_data = {
+            "Info": {
+                "MRno": "M102",
+                "MRtime": ["二3-4", "二7-8"],
+                "Uno": "20100001"
+            }
+        }
+        # 发送 POST 请求到会议室查询路由
+        response = self.app.post('/MeetingRoomS_Inser_S', json=query_data)
+        data = response.get_json()
+        print("try project insert data = " ,  data)
+        # 检查响应状态码是否为 200
+        if response.status_code == 200:
+            # 打印响应内容
+            print("OK, Response JSON:", response.json())
+        else:
+            print("NO, Failed to retrieve data. Status code:", response.status_code)
     
     
     
@@ -221,25 +221,25 @@ class TestApp(unittest.TestCase):
     
     
     
-    # 学生会议室取消预约测试
-    def test_meetingroom_delete_S_route(self):
-        # 准备测试数据
-        query_data = {
-            "MRno": "M101",
-            "Sno": "20100001"
-        }
-        print("try my delete meetingroom data = " ,  query_data)
-        # 发送 POST 请求到课程查询路由
-        response = self.app.post('/My_MeetingRoom_Delete_S/', json=query_data)
-        # 获取响应的 JSON 数据
-        data = response.get_json()
-        print("try classroom select data = " ,  data)
-        # 检查响应状态码是否为 200
-        if response.status_code == 200:
-            # 打印响应内容
-            print("OK, Response JSON:", response.json())
-        else:
-            print("NO, Failed to retrieve data. Status code:", response.status_code)
+    # # 学生会议室取消预约测试
+    # def test_meetingroom_delete_S_route(self):
+    #     # 准备测试数据
+    #     query_data = {
+    #         "MRno": "M101",
+    #         "Sno": "20100001"
+    #     }
+    #     print("try my delete meetingroom data = " ,  query_data)
+    #     # 发送 POST 请求到课程查询路由
+    #     response = self.app.post('/My_MeetingRoom_Delete_S/', json=query_data)
+    #     # 获取响应的 JSON 数据
+    #     data = response.get_json()
+    #     print("try classroom select data = " ,  data)
+    #     # 检查响应状态码是否为 200
+    #     if response.status_code == 200:
+    #         # 打印响应内容
+    #         print("OK, Response JSON:", response.json())
+    #     else:
+    #         print("NO, Failed to retrieve data. Status code:", response.status_code)
         
         
         

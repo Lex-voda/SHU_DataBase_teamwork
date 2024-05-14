@@ -698,21 +698,21 @@ class UserManager:
         
         
     
-    #会议室查询    
+    # 会议室查询    
     def get_meetingroom_situation(self, cursor, mrno):
         try:
             # 执行查询操作
             cursor.execute(
                 """
-                SELECT "MRno", "MRtime"
+                SELECT "MRno", "Sno" AS "Uno", "MRtime"
                 FROM "MeetingRoomS"
                 WHERE "MRno" = %(mrno)s
                 UNION
-                SELECT "MRno", "MRtime"
+                SELECT "MRno", "Tno" AS "Uno", "MRtime"
                 FROM "MeetingRoomT"
                 WHERE "MRno" = %(mrno)s
                 UNION
-                SELECT "MRno", "MRtime"
+                SELECT "MRno", "Ano" AS "Uno", "MRtime"
                 FROM "MeetingRoomA"
                 WHERE "MRno" = %(mrno)s
                 ORDER BY "MRtime"
@@ -722,13 +722,25 @@ class UserManager:
             # 获取查询结果
             rows = cursor.fetchall()
 
-            # 将查询结果进行格式化
+            # 初始化一个字典用于合并相同的 MRno
+            meetingroom_dict = {}
+            for row in rows:
+                mrno = row[0]
+                uno = row[1]
+                mrtime = row[2]
+                if mrno not in meetingroom_dict:
+                    meetingroom_dict[mrno] = {"Uno": [], "MRtime": []}
+                meetingroom_dict[mrno]["Uno"].append(uno)
+                meetingroom_dict[mrno]["MRtime"].append(mrtime)
+
+            # 将字典转换为所需的列表格式
             meetingroom_situation = [
                 {
-                    "MRno": row[0],
-                    "MRtime": row[1]
+                    "MRno": mrno,
+                    "Uno": details["Uno"],
+                    "MRtime": details["MRtime"]
                 }
-                for row in rows
+                for mrno, details in meetingroom_dict.items()
             ]
 
             # 返回查询结果
@@ -737,36 +749,19 @@ class UserManager:
             # 如果出现异常，返回错误消息
             return {"message": str(e)}
 
-    
-    
-    
-    
-    # 会议室预约
-    def meetingroom_order(self, cursor, mrno="", mrtime="", uno=""):
-        # 根据 Uno 判断身份是学生、教师还是管理员
-        identity = uno[0]  # 获取学号/工号/管理员号的首位数字
-        
-        # 插入数据到不同的表格中
-        if identity == '2':  # 学生
-            table_name = "MeetingRoomS"
-            column_names = ["MRno", "Sno", "MRtime"]
-        elif identity == '1':  # 教师
-            table_name = "MeetingRoomT"
-            column_names = ["MRno", "Tno", "MRtime"]
-        elif identity == '0':  # 管理员
-            table_name = "MeetingRoomA"
-            column_names = ["MRno", "Ano", "MRtime"]
-        # else:
-        #     return {
-        #         "flag": "0",
-        #         "message": "Invalid identity provided."
-        #     }
 
-        # 插入数据到对应的表格中
+
+    
+    
+    
+    
+   # 会议室预约
+    def meetingroom_order(self, cursor, mrno="", mrtime="", uno=""):
+        # 插入数据到学生表 MeetingRoomS
         try:
             cursor.execute(
-                f"""
-                INSERT INTO "{table_name}" ("MRno", "{column_names[1]}", "MRtime")
+                """
+                INSERT INTO "MeetingRoomS" ("MRno", "Sno", "MRtime")
                 VALUES (%(mrno)s, %(uno)s, %(mrtime)s)
                 """,
                 {"mrno": mrno, "uno": uno, "mrtime": mrtime},
@@ -776,14 +771,17 @@ class UserManager:
 
             # 返回成功信息
             return {
-                "Info": {"MRno": mrno, "MRtime": mrtime, "Uno": uno},
-                "flag": "1"
+                "flag": "True"
             }
         except Exception as e:
             # 如果出现异常，回滚事务
             cursor.connection.rollback()
             # 返回错误信息
-            return {"message": str(e)}
+            return {
+                "flag": "False",
+                "message": str(e)  # 返回错误信息，便于调试
+            }
+
 
 
 
