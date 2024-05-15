@@ -246,10 +246,6 @@ def meetingroom_inquire_rute(cursor):
     data["MeetingRoom"] = meetingroom_situation
     return data
     
-    
-    
-    
-    
 # 会议室预约与续约路由(虽然使用Uno作为标签，但是这里只做插入学生表，后续只需要修改user_manager代码即可)
 @app.route(
     "/MeetingRoomS_Insert_S",
@@ -309,10 +305,6 @@ def my_meetingroom_inquire_S_rute(cursor):
     # 返回已选课程信息的 JSON 响应
     data["MeetingRoom"] = meetingroom_order_result
     return data
-
-
-
-
 
 # 学生会议室取消预约路由
 @app.route(
