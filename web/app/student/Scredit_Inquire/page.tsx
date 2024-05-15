@@ -28,6 +28,7 @@ const columns = [
 
 export default function App() {
   const userInfo = useUserInfo();
+
   const [credits, setCredits] = useState<Array<ScreditType>>([]);
 
   const refreshUsers = () => {
@@ -91,6 +92,7 @@ export default function App() {
       ]);
     } else {
       try {
+        // console.log(userInfo)
         if (userInfo)
           API.StudentServiceApi.getScredit(userInfo.userId)
             .then((res) => {
@@ -115,7 +117,7 @@ export default function App() {
 
   useEffect(() => {
     refreshUsers();
-  }, []);
+  }, [userInfo]);
 
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 8;

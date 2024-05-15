@@ -87,127 +87,17 @@ def login(cursor):
             500,
         )
 
-# # 学生选课路由
-# @app.route(
-#     "/Scredict_Inquire/",
-#     methods=["GET"],
-#     endpoint="/Scredict_Inquire/",
-# )
-# @auth_manager.token_required("S")
-# @db_manager.connect_db
-# def student_enroll(cursor, current_user):
-#     # 获取前端发送的 JSON 表单
-#     data = request.get_json()
-#     print(data)
-#     xh = current_user
-
-#     # 判断是课程查询请求还是选课请求
-#     if "action" not in data:
-#         return jsonify(
-#             {
-#                 "status": "failed",
-#                 "message": "Invalid request format",
-#             }
-#         )
-
-#     action = data["action"]
-
-#     if action == "get_schedule":
-#         # 课程查询请求
-#         partial_schedule = user_manager.get_partial_open_course(
-#             cursor=cursor,
-#             start_position=0,
-#             length=40,
-#             kch=data["course_info"]["kch"],
-#             kcm=data["course_info"]["kcm"],
-#             xf=data["course_info"]["xf"],
-#             jsh=data["course_info"]["jsh"],
-#             jsxm=data["course_info"]["jsxm"],
-#             sksj=data["course_info"]["sksj"],
-#         )
-#         print(partial_schedule)
-#         return partial_schedule
-
-#     elif action == "enroll":
-#         # 选课请求
-#         response = user_manager.enroll_student_course(
-#             cursor,
-#             xh=xh,
-#             kch=data["course_info"]["kch"],
-#             jsh=data["course_info"]["jsh"],
-#         )
-#         return response
-
-#     return jsonify(
-#         {
-#             "status": "failed",
-#             "message": "Invalid action",
-#         }
-#     )
-
-
-# # 学生退课路由
-# @app.route(
-#     "/student_drop/",
-#     methods=["POST"],
-#     endpoint="/student_drop/",
-# )
-# @auth_manager.token_required("student")
-# @db_manager.connect_db
-# def student_drop(cursor, current_user):
-#     data = request.get_json()
-#     xh = current_user  # 当前登录的学生学号
-
-#     # 判断是课程查询请求还是选课请求
-#     if "action" not in data:
-#         return jsonify(
-#             {
-#                 "status": "failed",
-#                 "message": "Invalid request format",
-#             }
-#         )
-
-#     action = data["action"]
-
-#     if action == "get_schedule":
-#         # 课程查询请求
-#         enrolled_courses = user_manager.get_student_enrolled_courses(
-#             cursor=cursor, xh=xh
-#         )
-#         return enrolled_courses
-
-#     elif action == "drop":
-#         # 选课请求
-#         response = user_manager.drop_course(
-#             cursor=cursor,
-#             xh=xh,
-#             kch=data["course_info"]["kch"],
-#             jsh=data["course_info"]["jsh"],
-#         )
-#         return response
-
-#     return jsonify(
-#         {
-#             "status": "failed",
-#             "message": "Invalid action",
-#         }
-#     )
-
-
-
-
-
 # 学分完成情况查询路由
 # 连接路由
 @app.route(
     "/Scredit_Inquire",
     methods=["POST"],
-    endpoint="/Scredit_Inquire",
+    endpoint="Scredit_Inquire",
 )
 @auth_manager.token_required("2")
 # 连接数据库
 @db_manager.connect_db
-def student_scredit_complete(cursor, current_user):
+def student_scredit_complete(cursor):
     # 获取前端发送的 JSON 表单
     data = request.get_json()
     # print("qina data = ", data)
@@ -215,11 +105,12 @@ def student_scredit_complete(cursor, current_user):
     #authorization = request.headers.get("Authorization")
     keywords = data["Keywords"]
     #print("qian data = ", keywords)
-    sno = keywords["Sno"]
+    sno = keywords.get("Sno","")
     print("qian sno = ", sno)
     enrolled_courses = user_manager.student_scredit_complete_situation(cursor, sno)
     # print("qian enrolled_courses = ", enrolled_courses)
     data["Scredit"] = enrolled_courses
+    print(data)
     return data
 
 
@@ -234,7 +125,7 @@ def student_scredit_complete(cursor, current_user):
 )
 @auth_manager.token_required("2")
 @db_manager.connect_db
-def course_exist_find(cursor, current_user):
+def course_exist_find(cursor):
     data = request.get_json()
     keywords = data["Keywords"]
     #print("qian data = ", keywords)
@@ -243,12 +134,12 @@ def course_exist_find(cursor, current_user):
         cursor=cursor,
         # start_position=0,
         # length=40,
-        cno=keywords["Cno"],
-        cname=keywords["Cname"],
-        credit=keywords["Credit"],
-        ctno=keywords["Ctno"],
-        tname=keywords["Tname"],
-        crtime=keywords["CRtime"],
+        cno=keywords.get("Cno",""),
+        cname=keywords.get("Cname",""),
+        credit=keywords.get("Credit",""),
+        ctno=keywords.get("Ctno",""),
+        tname=keywords.get("Tname",""),
+        crtime=keywords.get("CRtime",""),
     )
     #print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
@@ -267,12 +158,12 @@ def course_exist_find(cursor, current_user):
 )
 @auth_manager.token_required("2")
 @db_manager.connect_db
-def project_exist_find(cursor, current_user):
+def project_exist_find(cursor):
     data = request.get_json()
     keywords = data["Keywords"]
     # print("qian data = ", keywords)
     sno = keywords["Sno"]
-    # 课程查询请求
+
     project_exist = user_manager.get_project(cursor, sno)
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
@@ -291,24 +182,28 @@ def project_exist_find(cursor, current_user):
 )
 @auth_manager.token_required("2")
 @db_manager.connect_db
-def project_insert(cursor, current_user):
+def project_insert(cursor):
     data = request.get_json()
     keywords = data["Info"]
+    print(keywords)
     #print("qian data = ", keywords)
-    # 教室查询请求
-    Project_insert_flag = user_manager.insert_project_into_database(
+    if len(keywords["PSno"]) == 1:
+        psno_members = [""]
+    else:
+        psno_members = keywords["PSno"][1:]  # 剩余元素为组员学号列表
+
+    Project_insert = user_manager.insert_project_into_database(
         cursor=cursor,
         # 提取项目名、组长学号、老师工号和组员学号列表
-        pname = keywords["Pname"],
+        pname = keywords.get("Pname","默认项目"),
         psno_leader = keywords["PSno"][0],  # 第一个元素为组长学号
-        ptno = data["PTno"],
-        psno_members = keywords["PSno"][1:],  # 剩余元素为组员学号列表
-    )["flag"]
+        ptno = keywords["PTno"],
+        psno_members = psno_members
+    )
     # print("qian course_exist_find = ", course_exist)
-    # 返回已选课程信息的 JSON 响应
-    data["flag"]=Project_insert_flag
+    print(Project_insert)
+    data["flag"]=Project_insert["flag"]
     return data
-
 
 
 
@@ -321,7 +216,7 @@ def project_insert(cursor, current_user):
 )
 @auth_manager.token_required("2")
 @db_manager.connect_db
-def classroom_exist_find(cursor, current_user):
+def classroom_exist_find(cursor):
     data = request.get_json()
     #print("qian data = ", data)
     keywords = data["Keywords"]
@@ -352,11 +247,10 @@ def meetingroom_inquire_rute(cursor):
     data = request.get_json()
     # print("qian data = ", data)
     keywords = data["Keywords"]
-    # keyword = keywords[0]
-    # 教室查询请求
+    
     meetingroom_situation = user_manager.get_meetingroom_situation(
         cursor=cursor,
-        mrno=keywords["MRno"]
+        mrno=keywords.get("MRno","")
     )
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
@@ -369,9 +263,9 @@ def meetingroom_inquire_rute(cursor):
     
 # 会议室预约与续约路由(虽然使用Uno作为标签，但是这里只做插入学生表，后续只需要修改user_manager代码即可)
 @app.route(
-    "/MeetingRoomS_Inser_S",
+    "/MeetingRoomS_Insert_S",
     methods=["POST"],
-    endpoint="/MeetingRoomS_Inser_S",
+    endpoint="/MeetingRoomS_Insert_S",
 )
 @db_manager.connect_db
 def meetingroom_inquire_rute(cursor):
@@ -452,104 +346,6 @@ def meetingroom_delete_rute(cursor):
     # 返回已选课程信息的 JSON 响应
     data["flag"] = meetingroom_drop_result
     return data
-
-
-
-
-
-# # 学生查课路由
-# @app.route(
-#     "/get_student_schedule/",
-#     methods=["GET", "POST"],
-#     endpoint="/get_student_schedule/",
-# )
-# @auth_manager.token_required("student")
-# @db_manager.connect_db
-# def get_student_schedule(cursor, current_user):
-#     data = request.get_json()
-#     xh = current_user
-#     if "action" not in data:
-#         return jsonify(
-#             {
-#                 "status": "failed",
-#                 "message": "Invalid request format",
-#             }
-#         )
-
-#     action = data["action"]
-
-#     if action == "get_schedule":
-#         # 调用已有的函数获取已选课程信息
-#         enrolled_courses = user_manager.get_student_enrolled_courses(cursor, xh)
-#         # 返回已选课程信息的 JSON 响应
-#         return enrolled_courses
-#     return jsonify(
-#         {
-#             "status": "failed",
-#             "message": "Invalid action",
-#         }
-#     )
-
-# # 学生创建项目路由
-# @app.route(
-#     "/Project_Insert/",
-#     methods=["POST"],
-#     endpoint="/Project_Insert/",
-# )
-# @auth_manager.token_required("S")
-# @db_manager.connect_db
-# def student_enroll(cursor, current_user):
-#     # 获取前端发送的 JSON 表单
-#     data = request.get_json()
-#     print(data)
-#     xh = current_user
-
-#     # 判断是课程查询请求还是选课请求
-#     if "action" not in data:
-#         return jsonify(
-#             {
-#                 "status": "failed",
-#                 "message": "Invalid request format",
-#             }
-#         )
-
-#     action = data["action"]
-
-#     if action == "get_schedule":
-#         # 课程查询请求
-#         partial_schedule = user_manager.get_partial_open_course(
-#             cursor=cursor,
-#             start_position=0,
-#             length=40,
-#             kch=data["course_info"]["kch"],
-#             kcm=data["course_info"]["kcm"],
-#             xf=data["course_info"]["xf"],
-#             jsh=data["course_info"]["jsh"],
-#             jsxm=data["course_info"]["jsxm"],
-#             sksj=data["course_info"]["sksj"],
-#         )
-#         print(partial_schedule)
-#         return partial_schedule
-
-#     elif action == "enroll":
-#         # 选课请求
-#         response = user_manager.enroll_student_course(
-#             cursor,
-#             xh=xh,
-#             kch=data["course_info"]["kch"],
-#             jsh=data["course_info"]["jsh"],
-#         )
-#         return response
-
-#     return jsonify(
-#         {
-#             "status": "failed",
-#             "message": "Invalid action",
-#         }
-#     )
-
-
-
 
 
 

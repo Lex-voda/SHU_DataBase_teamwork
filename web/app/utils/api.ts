@@ -158,7 +158,7 @@ const StudentServiceApi = {
     ),
   getProject: async (Sno: string) =>
     await instance.post<getScreditReq, AxiosResponse<Partial<getProjectRes>>>(
-      "/Project_Inquire",
+      "/Project_Inquire_S",
       {
         Keywords: {
           Sno: Sno,

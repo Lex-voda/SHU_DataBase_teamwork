@@ -554,7 +554,7 @@ class UserManager:
         pname="", 
         psno_leader="", 
         ptno="", 
-        psno_members=""
+        psno_members=None
         ):
         try:
             # 生成项目号 pno
@@ -611,7 +611,7 @@ class UserManager:
             return {
                 "Info": {"Pname": pname, "PSno": psno_members},
                 "PTno": ptno,
-                "flag": "1"  # 表示操作成功
+                "flag": "True"  # 表示操作成功
             }
         except Exception as e:
             # 如果出现异常，回滚事务
@@ -621,7 +621,7 @@ class UserManager:
             return {
                 "Info": {"Pname": pname, "PSno": psno_members},
                 "PTno": ptno,
-                "flag": "0",  # 表示操作失败
+                "flag": "False",  # 表示操作失败
                 "message": str(e)  # 返回异常信息
             }
 
@@ -706,15 +706,15 @@ class UserManager:
                 """
                 SELECT "MRno", "Sno" AS "Uno", "MRtime"
                 FROM "MeetingRoomS"
-                WHERE "MRno" = %(mrno)s
+                WHERE (%(mrno)s = '' OR "MRno" = %(mrno)s)
                 UNION
                 SELECT "MRno", "Tno" AS "Uno", "MRtime"
                 FROM "MeetingRoomT"
-                WHERE "MRno" = %(mrno)s
+                WHERE (%(mrno)s = '' OR "MRno" = %(mrno)s)
                 UNION
                 SELECT "MRno", "Ano" AS "Uno", "MRtime"
                 FROM "MeetingRoomA"
-                WHERE "MRno" = %(mrno)s
+                WHERE (%(mrno)s = '' OR "MRno" = %(mrno)s)
                 ORDER BY "MRtime"
                 """,
                 {"mrno": mrno}
