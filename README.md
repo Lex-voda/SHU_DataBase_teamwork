@@ -93,10 +93,11 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
 注：我们的触发器设计因为特殊的时间格式只用课程知识无法满足，需要借助触发器函数实现，请借助gpt和相关文档开发
 
 - 格式检查断言：任何对表的注入都需要满足格式要求，需要进行断言检查，尽管大部分表没有开放给用户的注入接口，但是也要设计对应的格式检查断言（报告内容+++）
-- `MeetingRoomX`触发器：因为管理员通过相较于教师和学生更高的预约优先级来管理会议室的使用，因此当当`MeetingRoomA`发生插入时，触发器需要检查`MeetingRoomS`和`MeetingRoomS`与管理员预约的会议室相同的表项，以排除时间冲突，具体来说：
+- `MeetingRoomX`触发器1-管理员权限触发器：因为管理员通过相较于教师和学生更高的预约优先级来管理会议室的使用，因此当当`MeetingRoomA`发生插入时，触发器需要检查`MeetingRoomS`和`MeetingRoomS`与管理员预约的会议室相同的表项，以排除时间冲突，具体来说：
   - 设`MeetingRoomS`和`MeetingRoomST`中对会议室`H`的预约时间为 `X`，`MeetingRoomA`中新插入的对会议室`H`的预约时间为`Y`
   - 如果$X\in Y$，则直接删除`MeetingRoomS`和`MeetingRoomS`中对会议室`H`的预约
-  - 如果$X\cap Y\neq \emptyset$，则修改`MeetingRoomS`和`MeetingRoomS`中对会议室`H`的预约时间为`X-Y`
+  - 如果$X\cap Y\neq \emptyset$​，则修改`MeetingRoomS`和`MeetingRoomS`中对会议室`H`的预约时间为`X-Y`
+- `MeetingRoomX`触发器2-时间延续触发器：对于`MRno`和`Uno`相同的表项，插入时需要比对它们的时间`MRtime`，如果时间上连续，例如`1-2`和`3-4`，则合并为一个表项，其时间为`1-4`
 
 
 ### 界面与功能
