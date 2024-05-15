@@ -19,11 +19,16 @@ export function useUserInfo() {
     } else {
       const cachedData = localStorage.getItem("dbuserInfo");
       if (cachedData) {
+        setIsLoading(false);
         const cachedUserInfo = JSON.parse(cachedData);
-        setUserInfo(cachedUserInfo.data);
+
+        setUserInfo({
+          userId: cachedUserInfo.Uno,
+          status: cachedUserInfo.status,
+        });
       }
     }
-    setIsLoading(false);
+    
   }, []);
 
   if (isLoading) {
