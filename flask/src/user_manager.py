@@ -483,9 +483,6 @@ class UserManager:
         return course_exist_
     
     
-    
-    
-    
     # 学生项目查询
     def get_project(self, cursor, sno):
         # 查询项目信息
@@ -541,7 +538,7 @@ class UserManager:
             projmen_info.append(per_projmen_info)
 
         return project_info, projmen_info
-    
+
     
     
     

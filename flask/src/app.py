@@ -26,7 +26,7 @@ def login(cursor):
     data = request.get_json()
     username = data["Uno"]
     password = data["Key"]
-    print(data)
+    # print(data)
     if not username or not password:
         return (
             jsonify(
@@ -41,20 +41,11 @@ def login(cursor):
     try:
         # 获得改用户的身份
         user_type = user_manager.verify_credentials(cursor, username, password)
-        print(user_type)
         # 判断是否存在该用户
         if user_type is not None:
             # 获取用户完整数据
             user_info = user_manager.get_user_info(cursor, user_type, username)
-            # print(user_info)
-            # print("Authorization = " + str(auth_manager.generate_token(username, user_info["status"])))
-            # ans = {
-            #     "Authorization": str(auth_manager.generate_token(
-            #         username, user_info["status"]
-            #     )),
-            #     #user_info内容："Uno": row[0],"Key": row[1],"status": "A","flag": True
-            #     **user_info,
-            # }
+
             return jsonify(
                     {
                         # generate_token在生成Authorization
@@ -106,11 +97,9 @@ def student_scredit_complete(cursor):
     keywords = data["Keywords"]
     #print("qian data = ", keywords)
     sno = keywords.get("Sno","")
-    print("qian sno = ", sno)
     enrolled_courses = user_manager.student_scredit_complete_situation(cursor, sno)
     # print("qian enrolled_courses = ", enrolled_courses)
     data["Scredit"] = enrolled_courses
-    print(data)
     return data
 
 
@@ -202,7 +191,6 @@ def project_insert(cursor):
         psno_members = psno_members
     )
     # print("qian course_exist_find = ", course_exist)
-    print(Project_insert)
     data["flag"]=Project_insert["flag"]
     return data
 
