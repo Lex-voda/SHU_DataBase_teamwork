@@ -517,13 +517,12 @@ class UserManager:
                 "Sno": row[2],
                 "Sname": row[3],
                 "Tno": row[4],
-                "Tname": row[5],
-                "ProjMen": []  # 用于存储组员信息
+                "Tname": row[5]
             }
             for row in rows
         ]
-
         # 查询每个项目的组员信息并添加到项目信息中
+        projmen_info = []
         for proj in project_info:
             pno = proj['Pno']
             proj_mem_query = """
@@ -535,13 +534,13 @@ class UserManager:
             proj_mem_parameters = {'pno': pno}
             cursor.execute(proj_mem_query, proj_mem_parameters)
             mem_rows = cursor.fetchall()
-            
-            proj['ProjMen'] = [
+            per_projmen_info = [
                 {"Sno": mem_row[0], "Sname": mem_row[1]}
                 for mem_row in mem_rows
             ]
+            projmen_info.append(per_projmen_info)
 
-        return project_info
+        return project_info, projmen_info
     
     
     
@@ -776,14 +775,13 @@ class UserManager:
         except Exception as e:
             # 如果出现异常，回滚事务
             cursor.connection.rollback()
+            print(mrno, mrtime, uno)
+            print(e)
             # 返回错误信息
             return {
                 "flag": "False",
                 "message": str(e)  # 返回错误信息，便于调试
             }
-
-
-
 
 
 
@@ -824,7 +822,6 @@ class UserManager:
             # 合并查询结果
             rows = rows_s + rows_t + rows_a
 
-            # 初始化一个字典用于存储结果
             meetingroom_dict = {}
             for row in rows:
                 mrno = row[0]
@@ -834,9 +831,17 @@ class UserManager:
                     meetingroom_dict[mrno] = {"Uno": [], "MRtime": []}
                 meetingroom_dict[mrno]["Uno"].append(uno)
                 meetingroom_dict[mrno]["MRtime"].append(mrtime)
-
-            # 返回结果字典
-            return meetingroom_dict
+            meetingroom_res = []
+            for mron in meetingroom_dict:
+                meetingroom_res.append(
+                    {
+                        "MRno": mron,
+                        "Uno": meetingroom_dict[mron]["Uno"],
+                        "MRtime": meetingroom_dict[mron]["MRtime"]
+                    }
+                )
+            # 返回结果
+            return meetingroom_res
         except Exception as e:
             # 如果出现异常，返回错误消息
             return {"message": str(e)}

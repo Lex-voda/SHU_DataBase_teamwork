@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 
 export function useUserInfo() {
-  const cachedData = localStorage.getItem("dbuserInfo");
+  const isBrowser = typeof window !== 'undefined';
+  const cachedData = isBrowser ? localStorage.getItem("dbuserInfo") : null;
   const initialUserInfo = cachedData
     ? {
         userId: JSON.parse(cachedData).Uno,

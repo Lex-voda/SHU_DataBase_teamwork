@@ -164,10 +164,11 @@ def project_exist_find(cursor):
     # print("qian data = ", keywords)
     sno = keywords["Sno"]
 
-    project_exist = user_manager.get_project(cursor, sno)
+    project_exist, proj_men = user_manager.get_project(cursor, sno)
     # print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
     data["Project"] = project_exist
+    data["ProjMen"] = proj_men
     return data
 
 
@@ -278,7 +279,7 @@ def meetingroom_inquire_rute(cursor):
     uno = info.get("Uno")
     # 教室查询请求
     # 生成需要插入的元组列表
-    tuples_to_insert = [(mrno, mrtime, uno) for mrtime in zip(mrtimes)]
+    tuples_to_insert = [(mrno, mrtime, uno) for mrtime,uno in zip(mrtimes,uno)]
     # 插入每个元组到表格中
     all_success = True
     for mrno, mrtime, uno in tuples_to_insert:
