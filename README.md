@@ -739,7 +739,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		"Cono":"",
      		"Cname":""
  			},
- "Scredit":[
+ "Student":[
      		{
             "Sno":"" ,
      		"Sname":"" ,
@@ -783,7 +783,7 @@ YYYY/MM/DD_hhmmss_xxxx.log    e.g:2024/04/24_132355_abcd.log (xxxx是请求头�
      		"Cono":"",
      		"Cname":"" 
  			},
- "Scredit":[
+ "Teacher":[
      		{
      		"Tno":"" ,
      		"Tname":"" ,
