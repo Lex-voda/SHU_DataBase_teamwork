@@ -186,3 +186,161 @@ INSERT INTO MeetingRoomA (MRno, Ano, MRtime) VALUES
 ('MR02', 'A0000002', '本周五下午'),
 ('MR03', 'A0000001', '下周二上午');
 
+CREATE OR REPLACE FUNCTION check_conflict_times() RETURNS TRIGGER AS $$
+DECLARE
+    existing_record_s RECORD;
+    existing_record_t RECORD;
+    new_start_time INT;
+    new_end_time INT;
+    existing_start_time INT;
+    existing_end_time INT;
+BEGIN
+    new_start_time := CAST(SPLIT_PART(NEW."MRtime", '-', 1) AS INT);
+    new_end_time := CAST(SPLIT_PART(NEW."MRtime", '-', 2) AS INT);
+
+    FOR existing_record_s IN SELECT * FROM "MeetingRoomS" WHERE "MRno" = NEW."MRno"
+    LOOP
+        existing_start_time := CAST(SPLIT_PART(existing_record_s."MRtime", '-', 1) AS INT);
+        existing_end_time := CAST(SPLIT_PART(existing_record_s."MRtime", '-', 2) AS INT);
+        IF existing_start_time >= new_start_time AND existing_end_time <= new_end_time THEN
+            DELETE FROM "MeetingRoomS" WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_s."MRtime";
+        ELSIF existing_start_time < new_start_time AND existing_end_time > new_end_time THEN
+            UPDATE "MeetingRoomS" SET "MRtime" = existing_start_time::TEXT || '-' || (new_start_time - 1)::TEXT WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_s."MRtime";
+            INSERT INTO "MeetingRoomS" ("MRno", "Uno", "MRtime") VALUES (NEW."MRno", existing_record_s."Uno", (new_end_time + 1)::TEXT || '-' || existing_end_time::TEXT);
+        ELSIF existing_start_time < new_start_time AND existing_end_time >= new_start_time THEN
+            UPDATE "MeetingRoomS" SET "MRtime" = existing_start_time::TEXT || '-' || (new_start_time - 1)::TEXT WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_s."MRtime";
+        ELSIF existing_start_time <= new_end_time AND existing_end_time > new_end_time THEN
+            UPDATE "MeetingRoomS" SET "MRtime" = (new_end_time + 1)::TEXT || '-' || existing_end_time::TEXT WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_s."MRtime";
+        END IF;
+    END LOOP;
+
+    FOR existing_record_t IN SELECT * FROM "MeetingRoomT" WHERE "MRno" = NEW."MRno"
+    LOOP
+        existing_start_time := CAST(SPLIT_PART(existing_record_t."MRtime", '-', 1) AS INT);
+        existing_end_time := CAST(SPLIT_PART(existing_record_t."MRtime", '-', 2) AS INT);
+        IF existing_start_time >= new_start_time AND existing_end_time <= new_end_time THEN
+            DELETE FROM "MeetingRoomT" WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_t."MRtime";
+        ELSIF existing_start_time < new_start_time AND existing_end_time > new_end_time THEN
+            UPDATE "MeetingRoomT" SET "MRtime" = existing_start_time::TEXT || '-' || (new_start_time - 1)::TEXT WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_t."MRtime";
+            INSERT INTO "MeetingRoomT" ("MRno", "Uno", "MRtime") VALUES (NEW."MRno", existing_record_t."Uno", (new_end_time + 1)::TEXT || '-' || existing_end_time::TEXT);
+        ELSIF existing_start_time < new_start_time AND existing_end_time >= new_start_time THEN
+            UPDATE "MeetingRoomT" SET "MRtime" = existing_start_time::TEXT || '-' || (new_start_time - 1)::TEXT WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_t."MRtime";
+        ELSIF existing_start_time <= new_end_time AND existing_end_time > new_end_time THEN
+            UPDATE "MeetingRoomT" SET "MRtime" = (new_end_time + 1)::TEXT || '-' || existing_end_time::TEXT WHERE "MRno" = NEW."MRno" AND "MRtime" = existing_record_t."MRtime";
+        END IF;
+    END LOOP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_conflict ON "MeetingRoomA";
+CREATE TRIGGER check_conflict
+BEFORE INSERT ON "MeetingRoomA"
+FOR EACH ROW
+EXECUTE FUNCTION check_conflict_times();
+
+
+-- 触发器2
+CREATE OR REPLACE FUNCTION merge_meeting_times_s() RETURNS TRIGGER AS $$
+DECLARE
+    existing_record RECORD;
+    new_start_time INT;
+    new_end_time INT;
+    existing_start_time INT;
+    existing_end_time INT;
+BEGIN
+    new_start_time := CAST(SPLIT_PART(NEW."MRtime", '-', 1) AS INT);
+    new_end_time := CAST(SPLIT_PART(NEW."MRtime", '-', 2) AS INT);
+
+    FOR existing_record IN SELECT * FROM "MeetingRoomS" WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno"
+    LOOP
+        existing_start_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 1) AS INT);
+        existing_end_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 2) AS INT);
+
+        IF new_start_time - 1 = existing_end_time OR new_end_time + 1 = existing_start_time THEN
+            UPDATE "MeetingRoomS" SET "MRtime" = LEAST(existing_start_time, new_start_time)::TEXT || '-' || GREATEST(existing_end_time, new_end_time)::TEXT WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno";
+            RETURN NULL;
+        END IF;
+    END LOOP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_meeting_times_s ON "MeetingRoomS";
+CREATE TRIGGER check_meeting_times_s
+BEFORE INSERT ON "MeetingRoomS"
+FOR EACH ROW
+EXECUTE FUNCTION merge_meeting_times_s();
+
+--
+
+CREATE OR REPLACE FUNCTION merge_meeting_times_t() RETURNS TRIGGER AS $$
+DECLARE
+    existing_record RECORD;
+    new_start_time INT;
+    new_end_time INT;
+    existing_start_time INT;
+    existing_end_time INT;
+BEGIN
+    new_start_time := CAST(SPLIT_PART(NEW."MRtime", '-', 1) AS INT);
+    new_end_time := CAST(SPLIT_PART(NEW."MRtime", '-', 2) AS INT);
+
+    FOR existing_record IN SELECT * FROM "MeetingRoomS" WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno"
+    LOOP
+        existing_start_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 1) AS INT);
+        existing_end_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 2) AS INT);
+
+        IF new_start_time - 1 = existing_end_time OR new_end_time + 1 = existing_start_time THEN
+            UPDATE "MeetingRoomS" SET "MRtime" = LEAST(existing_start_time, new_start_time)::TEXT || '-' || GREATEST(existing_end_time, new_end_time)::TEXT WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno";
+            RETURN NULL;
+        END IF;
+    END LOOP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_meeting_times_t ON "MeetingRoomT";
+CREATE TRIGGER check_meeting_times_t
+BEFORE INSERT ON "MeetingRoomT"
+FOR EACH ROW
+EXECUTE FUNCTION merge_meeting_times_t();
+
+--
+
+CREATE OR REPLACE FUNCTION merge_meeting_times_a() RETURNS TRIGGER AS $$
+DECLARE
+    existing_record RECORD;
+    new_start_time INT;
+    new_end_time INT;
+    existing_start_time INT;
+    existing_end_time INT;
+BEGIN
+    new_start_time := CAST(SPLIT_PART(NEW."MRtime", '-', 1) AS INT);
+    new_end_time := CAST(SPLIT_PART(NEW."MRtime", '-', 2) AS INT);
+
+    FOR existing_record IN SELECT * FROM "MeetingRoomS" WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno"
+    LOOP
+        existing_start_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 1) AS INT);
+        existing_end_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 2) AS INT);
+
+        IF new_start_time - 1 = existing_end_time OR new_end_time + 1 = existing_start_time THEN
+            UPDATE "MeetingRoomS" SET "MRtime" = LEAST(existing_start_time, new_start_time)::TEXT || '-' || GREATEST(existing_end_time, new_end_time)::TEXT WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno";
+            RETURN NULL;
+        END IF;
+    END LOOP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_meeting_times_a ON "MeetingRoomA";
+CREATE TRIGGER check_meeting_times_a
+BEFORE INSERT ON "MeetingRoomA"
+FOR EACH ROW
+EXECUTE FUNCTION merge_meeting_times_a();
+
+--删除触发器
+DROP TRIGGER IF EXISTS check_meeting_times_s ON "MeetingRoomS";
