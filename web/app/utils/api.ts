@@ -1,7 +1,7 @@
 import { type AxiosResponse } from "axios";
 import instance from "./request";
 
-interface getScreditReq{
+interface getScreditReq {
   Keywords: {
     Sno: string;
   }
@@ -9,9 +9,9 @@ interface getScreditReq{
 
 interface getScreditRes {
   Scredit: Array<{
-    Sno: string;
+    Cname: string;
     Cno: string;
-    Pass: '0' | '1';
+    Credit: string;
   }>
 }
 

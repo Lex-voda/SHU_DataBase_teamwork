@@ -15,15 +15,15 @@ import API from "@/app/utils/api";
 import { error } from "@/app/utils/message";
 
 interface ScreditType {
-  Sno: string;
+  Cname: string;
   Cno: string;
-  Pass: '0' | '1';
+  Credit: string;
 }
 
 const columns = [
   { name: "课程号", iid: "Cno" },
-  { name: "学号", iid: "Sno" },
-  { name: "是否通过", iid: "Pass" },
+  { name: "课程名称", iid: "Cname" },
+  { name: "学分", iid: "Credit" },
 ];
 
 export default function App() {
@@ -35,59 +35,59 @@ export default function App() {
     if (process.env.NEXT_PUBLIC_TEST === "test") {
       setCredits([
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835001",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835002",
-          Pass: '0',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835003",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835004",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835005",
-          Pass: '0',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835006",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835007",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835008",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835009",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835010",
-          Pass: '1',
+          Credit: '4',
         },
         {
-          Sno: '21122833',
+          Cname: '计算机体系结构',
           Cno: "16835011",
-          Pass: '1',
+          Credit: '4',
         },
       ]);
     } else {
