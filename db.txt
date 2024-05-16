@@ -1,191 +1,4 @@
--- 学院信息表
-CREATE TABLE College (
-    Cono CHAR(2) PRIMARY KEY,
-    Cname VARCHAR(255)
-);
-
--- 管理员信息表
-CREATE TABLE Admin (
-    Ano CHAR(8) PRIMARY KEY,
-    Akey VARCHAR(255)
-);
-
--- 教师信息表
-CREATE TABLE Teacher (
-    Tno CHAR(8) PRIMARY KEY,
-    Tkey VARCHAR(255),
-    Tname VARCHAR(255),
-    Tlevel VARCHAR(255),
-    Tgender CHAR(1),
-    Cono CHAR(2),
-    FOREIGN KEY (Cono) REFERENCES College(Cono)
-);
-
--- 学生信息表
-CREATE TABLE Student (
-    Sno CHAR(8) PRIMARY KEY,
-    Skey VARCHAR(255),
-    Sname VARCHAR(255),
-    Grade VARCHAR(255),
-    Sgender CHAR(1),
-    Cono CHAR(2),
-    FOREIGN KEY (Cono) REFERENCES College(Cono)
-);
-
--- 课程信息表
-CREATE TABLE Course (
-    Cno CHAR(8) PRIMARY KEY,
-    Cname VARCHAR(255),
-    Credit VARCHAR(255),
-    Ctno CHAR(8),
-    Tno CHAR(8),
-    FOREIGN KEY (Tno) REFERENCES Teacher(Tno)
-);
-
--- 学分完成情况表
-CREATE TABLE Scredit (
-    Sno CHAR(8),
-    Cno CHAR(8),
-    Pass VARCHAR(255),
-    PRIMARY KEY (Sno, Cno),
-    FOREIGN KEY (Sno) REFERENCES Student(Sno),
-    FOREIGN KEY (Cno) REFERENCES Course(Cno)
-);
-
--- 教分完成情况表
-CREATE TABLE Tcredit (
-    Tno CHAR(8),
-    Cno CHAR(8),
-    PRIMARY KEY (Tno, Cno),
-    FOREIGN KEY (Tno) REFERENCES Teacher(Tno),
-    FOREIGN KEY (Cno) REFERENCES Course(Cno)
-);
-
--- 项目情况表
-CREATE TABLE Project (
-    Pno CHAR(8) PRIMARY KEY,
-    Pname VARCHAR(255),
-    Sno CHAR(8),
-    Tno CHAR(8),
-    FOREIGN KEY (Sno) REFERENCES Student(Sno),
-    FOREIGN KEY (Tno) REFERENCES Teacher(Tno)
-);
-
--- 项目队员表
-CREATE TABLE ProjMem (
-    Pno CHAR(8),
-    Sno CHAR(8),
-    PRIMARY KEY (Pno, Sno),
-    FOREIGN KEY (Pno) REFERENCES Project(Pno),
-    FOREIGN KEY (Sno) REFERENCES Student(Sno)
-);
-
--- 教室安排信息表
-CREATE TABLE ClassRoom (
-    CRno CHAR(4) PRIMARY KEY,
-    Cno CHAR(8),
-    Ctno CHAR(8),
-    CRtime VARCHAR(255),
-    FOREIGN KEY (Cno) REFERENCES Course(Cno),
-    FOREIGN KEY (Ctno) REFERENCES Teacher(Tno)
-);
-
--- 会议室预约学生情况表
-CREATE TABLE MeetingRoomS (
-    MRno CHAR(4) PRIMARY KEY,
-    Sno CHAR(8),
-    MRtime VARCHAR(255),
-    FOREIGN KEY (Sno) REFERENCES Student(Sno)
-);
-
--- 会议室预约教师情况表
-CREATE TABLE MeetingRoomT (
-    MRno CHAR(4) PRIMARY KEY,
-    Tno CHAR(8),
-    MRtime VARCHAR(255),
-    FOREIGN KEY (Tno) REFERENCES Teacher(Tno)
-);
-
--- 会议室预约管理员情况表
-CREATE TABLE MeetingRoomA (
-    MRno CHAR(4) PRIMARY KEY,
-    Ano CHAR(8),
-    MRtime VARCHAR(255),
-    FOREIGN KEY (Ano) REFERENCES Admin(Ano)
-);
-
--- 插入学院信息
-INSERT INTO College (Cono, Cname) VALUES 
-('01', '计算机学院'),
-('02', '外语学院'),
-('03', '经济管理学院');
-
--- 插入管理员信息
-INSERT INTO Admin (Ano, Akey) VALUES 
-('A0000001', 'admin_pass_01'),
-('A0000002', 'admin_pass_02');
-
--- 插入教师信息
-INSERT INTO Teacher (Tno, Tkey, Tname, Tlevel, Tgender, Cono) VALUES 
-('T0000001', 'teacher_pass_01', '张三', '教授', 'M', '01'),
-('T0000002', 'teacher_pass_02', '李四', '副教授', 'M', '02'),
-('T0000003', 'teacher_pass_03', '王五', '讲师', 'F', '03');
-
--- 插入学生信息
-INSERT INTO Student (Sno, Skey, Sname, Grade, Sgender, Cono) VALUES 
-('S0000001', 'student_pass_01', '小明', '大一', 'M', '01'),
-('S0000002', 'student_pass_02', '小红', '大二', 'F', '02'),
-('S0000003', 'student_pass_03', '小李', '大三', 'M', '03');
-
--- 插入课程信息
-INSERT INTO Course (Cno, Cname, Credit, Ctno, Tno) VALUES 
-('C0000001', '数据库原理', '3', NULL, 'T0000001'),
-('C0000002', '英语听力', '2', NULL, 'T0000002'),
-('C0000003', '经济学基础', '4', NULL, 'T0000003');
-
--- 插入学分完成情况
-INSERT INTO Scredit (Sno, Cno, Pass) VALUES 
-('S0000001', 'C0000001', '是'),
-('S0000002', 'C0000002', '是'),
-('S0000003', 'C0000003', '是');
-
--- 插入项目信息
-INSERT INTO Project (Pno, Pname, Sno, Tno) VALUES 
-('P0000001', '数据库项目', 'S0000001', 'T0000001'),
-('P0000002', '英语演讲比赛', 'S0000002', 'T0000002'),
-('P0000003', '经济学研究', 'S0000003', 'T0000003');
-
--- 插入项目队员信息
-INSERT INTO ProjMem (Pno, Sno) VALUES 
-('P0000001', 'S0000002'),
-('P0000001', 'S0000003'),
-('P0000002', 'S0000001'),
-('P0000003', 'S0000001');
-
--- 插入教室安排信息
-INSERT INTO ClassRoom (CRno, Cno, Ctno, CRtime) VALUES 
-('CR01', 'C0000001', 'T0000001', '周一上午'),
-('CR02', 'C0000002', 'T0000002', '周二下午'),
-('CR03', 'C0000003', 'T0000003', '周三晚上');
-
--- 插入会议室预约学生情况
-INSERT INTO MeetingRoomS (MRno, Sno, MRtime) VALUES 
-('MR01', 'S0000001', '下周二下午'),
-('MR02', 'S0000002', '本周末'),
-('MR03', 'S0000003', '下周一上午');
-
--- 插入会议室预约教师情况
-INSERT INTO MeetingRoomT (MRno, Tno, MRtime) VALUES 
-('MR01', 'T0000001', '下周三晚上'),
-('MR02', 'T0000002', '下周四上午'),
-('MR03', 'T0000003', '本周六下午');
-
--- 插入会议室预约管理员情况
-INSERT INTO MeetingRoomA (MRno, Ano, MRtime) VALUES 
-('MR01', 'A0000001', '下周一上午'),
-('MR02', 'A0000002', '本周五下午'),
-('MR03', 'A0000001', '下周二上午');
-
+-- 触发器1
 CREATE OR REPLACE FUNCTION check_conflict_times() RETURNS TRIGGER AS $$
 DECLARE
     existing_record_s RECORD;
@@ -287,13 +100,13 @@ BEGIN
     new_start_time := CAST(SPLIT_PART(NEW."MRtime", '-', 1) AS INT);
     new_end_time := CAST(SPLIT_PART(NEW."MRtime", '-', 2) AS INT);
 
-    FOR existing_record IN SELECT * FROM "MeetingRoomS" WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno"
+    FOR existing_record IN SELECT * FROM "MeetingRoomT" WHERE "MRno" = NEW."MRno" AND "Tno" = NEW."Tno"
     LOOP
         existing_start_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 1) AS INT);
         existing_end_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 2) AS INT);
 
         IF new_start_time - 1 = existing_end_time OR new_end_time + 1 = existing_start_time THEN
-            UPDATE "MeetingRoomS" SET "MRtime" = LEAST(existing_start_time, new_start_time)::TEXT || '-' || GREATEST(existing_end_time, new_end_time)::TEXT WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno";
+            UPDATE "MeetingRoomT" SET "MRtime" = LEAST(existing_start_time, new_start_time)::TEXT || '-' || GREATEST(existing_end_time, new_end_time)::TEXT WHERE "MRno" = NEW."MRno" AND "Tno" = NEW."Tno";
             RETURN NULL;
         END IF;
     END LOOP;
@@ -321,13 +134,13 @@ BEGIN
     new_start_time := CAST(SPLIT_PART(NEW."MRtime", '-', 1) AS INT);
     new_end_time := CAST(SPLIT_PART(NEW."MRtime", '-', 2) AS INT);
 
-    FOR existing_record IN SELECT * FROM "MeetingRoomS" WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno"
+    FOR existing_record IN SELECT * FROM "MeetingRoomA" WHERE "MRno" = NEW."MRno" AND "Ano" = NEW."Ano"
     LOOP
         existing_start_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 1) AS INT);
         existing_end_time := CAST(SPLIT_PART(existing_record."MRtime", '-', 2) AS INT);
 
         IF new_start_time - 1 = existing_end_time OR new_end_time + 1 = existing_start_time THEN
-            UPDATE "MeetingRoomS" SET "MRtime" = LEAST(existing_start_time, new_start_time)::TEXT || '-' || GREATEST(existing_end_time, new_end_time)::TEXT WHERE "MRno" = NEW."MRno" AND "Sno" = NEW."Sno";
+            UPDATE "MeetingRoomA" SET "MRtime" = LEAST(existing_start_time, new_start_time)::TEXT || '-' || GREATEST(existing_end_time, new_end_time)::TEXT WHERE "MRno" = NEW."MRno" AND "Ano" = NEW."Ano";
             RETURN NULL;
         END IF;
     END LOOP;
@@ -341,6 +154,3 @@ CREATE TRIGGER check_meeting_times_a
 BEFORE INSERT ON "MeetingRoomA"
 FOR EACH ROW
 EXECUTE FUNCTION merge_meeting_times_a();
-
---删除触发器
-DROP TRIGGER IF EXISTS check_meeting_times_s ON "MeetingRoomS";

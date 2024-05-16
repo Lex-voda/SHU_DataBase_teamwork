@@ -115,7 +115,6 @@ def student_scredit_complete(cursor):
     methods=["POST"],
     endpoint="/Course_Inquire",
 )
-@auth_manager.token_required("2")
 @db_manager.connect_db
 def course_exist_find(cursor):
     data = request.get_json()
@@ -207,7 +206,6 @@ def project_insert(cursor):
     methods=["POST"],
     endpoint="/ClassRoom_Inquire",
 )
-@auth_manager.token_required("2")
 @db_manager.connect_db
 def classroom_exist_find(cursor):
     data = request.get_json()
@@ -319,8 +317,6 @@ def my_meetingroom_inquire_S_rute(cursor):
 
 
 
-
-
 # 学生会议室取消预约路由
 @app.route(
     "/My_MeetingRoom_Delete_S",
@@ -350,9 +346,9 @@ def meetingroom_delete_rute(cursor):
 # 教分完成情况查询路由
 # 连接路由
 @app.route(
-    "/ClassRoom_Inquire",
+    "/Tcredit_Inquire",
     methods=["POST"],
-    endpoint="/ClassRoom_Inquire",
+    endpoint="/Tcredit_Inquire",
 )
 @auth_manager.token_required("1")
 # 连接数据库
@@ -492,10 +488,10 @@ def student_exist_find(cursor):
     )
     #print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    data["Scredit"] = student_exist
+    for student in student_exist:
+        student["Sgender"] = '女' if student["Sgender"] == '0' else '男'
+    data["Student"] = student_exist
     return data
-
-
 
 
 
@@ -525,7 +521,9 @@ def teacher_exist_find(cursor):
     )
     #print("qian course_exist_find = ", course_exist)
     # 返回已选课程信息的 JSON 响应
-    data["Scredit"] = teacher_exist
+    for Teacher in teacher_exist:
+        Teacher["Tgender"] = '女' if Teacher["Tgender"] == '0' else '男'
+    data["Teacher"] = teacher_exist
     return data
 
 
@@ -592,3 +590,7 @@ def meetingroom_delete_rute_A(cursor):
     # 返回已选课程信息的 JSON 响应
     data["flag"] = meetingroom_drop_result
     return data
+
+if __name__ == "__main__":
+    app.run(host="localhost", port=8000, debug=True)
+    
