@@ -249,9 +249,85 @@ const TeacherServiceApi = {
     await instance.post<cancelMeetingRoomReq, AxiosResponse<Partial<cancelMeetingRoomRes>>>(
       "/My_MeetingRoom_Delete_T",
       data
-    ),};
+    ),
+};
 
-const AdminServiceApi = {};
+interface studentInquireReq {
+  Keywords: {
+    Sno: string,
+    Sname: string,
+    Grade: string,
+    Sgender: string,
+    Cono: string,
+    Cname: string,
+  },
+}
+
+interface studentInquireRes {
+  Student: Array<{
+    Sno: string,
+    Sname: string,
+    Grade: string,
+    Sgender: string,
+    Cname: string
+  }>
+}
+
+interface teacherInquireReq {
+  Keywords: {
+    Tno: string,
+    Tname: string,
+    Tlevel: string,
+    Tgender: string,
+    Cono: string,
+    Cname: string,
+  },
+}
+
+interface teacherInquireRes {
+  Teacher: Array<
+    {
+      Tno: string,
+      Tname: string,
+      Tlevel: string,
+      Tgender: string,
+      Cname: string
+    }
+  >
+}
+
+const AdminServiceApi = {
+  getStudent: async (data: Partial<studentInquireReq>) =>
+    await instance.post<studentInquireReq, AxiosResponse<Partial<studentInquireRes>>>(
+      "/Student_Inquire",
+      data
+    ),
+  getTeacher: async (data: Partial<teacherInquireReq>) =>
+    await instance.post<teacherInquireReq, AxiosResponse<Partial<teacherInquireRes>>>(
+      "/Teacher_Inquire",
+      data
+    ),
+  getMeetingRoom: async (data: Partial<getMeetingRoomReq>) =>
+    await instance.post<getMeetingRoomReq, AxiosResponse<Partial<getMeetingRoomRes>>>(
+      "/MeetingRoom_Inquire",
+      data
+    ),
+  postMeetingRoom: async (data: Partial<postMeetingRoomReq>) =>
+    await instance.post<postMeetingRoomReq, AxiosResponse<Partial<postMeetingRoomRes>>>(
+      "/MeetingRoomS_Insert_A",
+      data
+    ),
+  getMyMeetingRoom: async (data: Partial<getMyMeetingRoomReq>) =>
+    await instance.post<getMyMeetingRoomReq, AxiosResponse<Partial<getMyMeetingRoomRes>>>(
+      "/My_MeetingRoom_Inquire",
+      data
+    ),
+  cancelMeetingRoom: async (data: Partial<cancelMeetingRoomReq>) =>
+    await instance.post<cancelMeetingRoomReq, AxiosResponse<Partial<cancelMeetingRoomRes>>>(
+      "/My_MeetingRoom_Delete_A",
+      data
+    ),
+};
 
 const API = {
   StudentServiceApi,

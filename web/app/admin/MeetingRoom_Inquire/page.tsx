@@ -101,7 +101,7 @@ export default function App() {
             ]);
         } else {
             try {
-                API.StudentServiceApi.getMeetingRoom({
+                API.AdminServiceApi.getMeetingRoom({
                     Keywords: {
                         MRno: mrno,
                     }
@@ -186,7 +186,7 @@ export default function App() {
         } else {
             try {
                 if (userInfo)
-                    API.StudentServiceApi.getMyMeetingRoom({
+                    API.AdminServiceApi.getMyMeetingRoom({
                         Keywords: {
                             Uno: userInfo.userId,
                         }
@@ -259,7 +259,7 @@ export default function App() {
                     for (let i = 0; i < MRTimeArray.length; i++) {
                         UnoArray.push(userInfo.userId);
                     }
-                    API.StudentServiceApi.postMeetingRoom({
+                    API.AdminServiceApi.postMeetingRoom({
                         Info: {
                             MRno: MRno,
                             MRtime: MRTimeArray,
@@ -301,7 +301,7 @@ export default function App() {
         } else {
             try {
                 if (userInfo) {
-                    API.StudentServiceApi.cancelMeetingRoom({
+                    API.AdminServiceApi.cancelMeetingRoom({
                         Key: {
                             MRno: MRno,
                             Uno: userInfo.userId,
