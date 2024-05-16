@@ -36,7 +36,7 @@ interface getCourseReq {
     Credit: string;
     Ctno: string;
     Tname: string;
-    Ctime: string;
+    CRtime: string;
   }
 }
 
@@ -46,7 +46,7 @@ interface getCourseRes {
     Cname: string;
     Credit: string;
     Ctno: string;
-    Ctime: string;
+    CRtime: string;
     Tname: string;
   }>
 }

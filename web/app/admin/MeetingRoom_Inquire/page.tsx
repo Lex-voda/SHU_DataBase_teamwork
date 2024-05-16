@@ -125,6 +125,11 @@ export default function App() {
                                     }
                                     meetingrooms.push(meetingroom);
                                 }
+                                meetingrooms.sort((a, b) => {
+                                    if(a.MRno < b.MRno) { return -1; }
+                                    if(a.MRno > b.MRno) { return 1; }
+                                    return 0;
+                                });
                                 setMeetingRooms(meetingrooms);
                             }
                         }
@@ -210,6 +215,11 @@ export default function App() {
                                         }
                                         meetingrooms.push(meetingroom);
                                     }
+                                    meetingrooms.sort((a, b) => {
+                                        if(a.MRno < b.MRno) { return -1; }
+                                        if(a.MRno > b.MRno) { return 1; }
+                                        return 0;
+                                    });
                                     setMeetingRooms2(meetingrooms);
                                 }
                             }
@@ -312,6 +322,7 @@ export default function App() {
                             if (res.status === 200) {
                                 if (res.data.flag === 'True') {
                                     success("取消成功！");
+                                    handleSearch();
                                     handleSearch2();
                                 }
                                 else {

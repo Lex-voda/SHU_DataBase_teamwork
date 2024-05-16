@@ -20,7 +20,7 @@ interface CourseType {
     Cname: string;
     Credit: string;
     Ctno: string;
-    Ctime: string;
+    CRtime: string;
     Tname: string;
 }
 
@@ -29,7 +29,7 @@ const columns = [
     { name: "课程名称", iid: "Cname" },
     { name: "学分", iid: "Credit" },
     { name: "课程教师编号", iid: "Ctno" },
-    { name: "课程时间", iid: "Ctime" },
+    { name: "课程时间", iid: "CRtime" },
     { name: "教师姓名", iid: "Tname" },
 ];
 
@@ -54,7 +54,7 @@ export default function App() {
     const [credit, setCredit] = useState<string>("");
     const [ctno, setCtno] = useState<string>("");
     const [tname, setTname] = useState<string>("");
-    const [ctime, setCtime] = useState<string>("");
+    const [CRtime, setCRtime] = useState<string>("");
 
     const handleSearch = () => {
         if (process.env.NEXT_PUBLIC_TEST === "test") {
@@ -64,7 +64,7 @@ export default function App() {
                     Cname: "计算机组成原理",
                     Credit: "4",
                     Ctno: "10001",
-                    Ctime: "10001",
+                    CRtime: "10001",
                     Tname: "张三",
                 },
                 {
@@ -72,7 +72,7 @@ export default function App() {
                     Cname: "操作系统",
                     Credit: "4",
                     Ctno: "10002",
-                    Ctime: "10002",
+                    CRtime: "10002",
                     Tname: "李四",
                 },
                 {
@@ -80,7 +80,7 @@ export default function App() {
                     Cname: "数据结构",
                     Credit: "4",
                     Ctno: "10003",
-                    Ctime: "10003",
+                    CRtime: "10003",
                     Tname: "王五",
                 },
                 {
@@ -88,7 +88,7 @@ export default function App() {
                     Cname: "计算机网络",
                     Credit: "4",
                     Ctno: "10004",
-                    Ctime: "10004",
+                    CRtime: "10004",
                     Tname: "赵六",
                 },
                 {
@@ -96,7 +96,7 @@ export default function App() {
                     Cname: "数据库系统",
                     Credit: "4",
                     Ctno: "10005",
-                    Ctime: "10005",
+                    CRtime: "10005",
                     Tname: "孙七",
                 },
             ]);
@@ -109,7 +109,7 @@ export default function App() {
                         Credit: credit,
                         Ctno: ctno,
                         Tname: tname,
-                        Ctime: ctime,
+                        CRtime: CRtime,
                     }
                 })
                     .then((res) => {
@@ -142,7 +142,7 @@ export default function App() {
         setCredit("");
         setCtno("");
         setTname("");
-        setCtime("");
+        setCRtime("");
     }
 
     return (
@@ -171,7 +171,7 @@ export default function App() {
                 </div>
                 <div className="flex gap-2 items-center">
                     <div>上课时间</div>
-                    <Input className="w-[70%]" type="text" onValueChange={setCtime} value={ctime} />
+                    <Input className="w-[70%]" type="text" onValueChange={setCRtime} value={CRtime} />
                 </div>
             </div>
             <div className="flex gap-6">

@@ -39,13 +39,12 @@ export default function MyTableRow2({ item, handleDate, handleCancel }: { item: 
                             className="w-[8%] h-[20px] mx-1 rounded-md text-center "
                             key={index}
                             style={{
-                                backgroundColor: index <= currentBlock - 0.5 ? 'grey' : (value !== 'empty' || (MRTimeArray.indexOf(index + 1) != -1)) ? randomColor[value === 'empty' ? 0 : (1 + (Number(value)) % 999)] : 'white',
-                                cursor: (value === 'empty' && index >= currentBlock - 0.5) ? "pointer" : "not-allowed",
+                                backgroundColor: index <= currentBlock - 0.5 ? 'grey' : ((MRTimeArray.indexOf(index + 1) != -1)) ? randomColor[0] : value === 'empty' ? 'white' : randomColor[(1 + (Number(value)) % 999)],
+                                cursor: (index >= currentBlock - 0.5) ? "pointer" : "not-allowed",
                                 opacity: index <= currentBlock - 0.5 ? '0.5' : '1',
                             }}
                             onClick={(e) => {
-                                console.log(MRTimeArray)
-                                if (value === 'empty' && index >= currentBlock - 0.5) {
+                                if (index >= currentBlock - 0.5) {
                                     for (let i = 0; i < MRTimeArray.length; i++) {
                                         if (MRTimeArray[i] === index + 1) {
                                             let temp = [...MRTimeArray];
@@ -58,10 +57,11 @@ export default function MyTableRow2({ item, handleDate, handleCancel }: { item: 
                                     let temp = [...MRTimeArray];
                                     temp[MRTimeArray.length] = index + 1;
                                     setMRTimeArray(temp);
+                                    console.log(temp)
                                 }
                             }}
                         >
-                            {value === 'empty' ? '' : value}
+                            {((MRTimeArray.indexOf(index + 1) != -1) || value === 'empty') ? '' : value}
                         </div>
                     )
                 })}

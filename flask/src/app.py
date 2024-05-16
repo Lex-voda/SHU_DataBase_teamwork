@@ -532,9 +532,9 @@ def teacher_exist_find(cursor):
 
 # 会议室预约与续约路由(虽然使用Uno作为标签，但是这里只做插入教师表，后续只需要修改user_manager代码即可)
 @app.route(
-    "/MeetingRoomS_Inser_A",
+    "/MeetingRoomS_Insert_A",
     methods=["POST"],
-    endpoint="/MeetingRoomS_Inser_A",
+    endpoint="/MeetingRoomS_Insert_A",
 )
 @db_manager.connect_db
 def meetingroom_inquire_rute_A(cursor):

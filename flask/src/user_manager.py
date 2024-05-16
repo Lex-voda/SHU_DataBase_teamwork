@@ -151,10 +151,10 @@ class UserManager:
             where_conditions.append(""""Course"."Ctno" = %(Ctno_)s""")
             parameters["Ctno_"] = ctno
         if tname != "":
-            where_conditions.append(""""Teacher"."tname" = %(Tname_)s""")
+            where_conditions.append(""""Teacher"."Tname" = %(Tname_)s""")
             parameters["Tname_"] = tname
         if crtime != "":
-            where_conditions.append(""""ClassRoom"."crtime" = %(CRtime_)s""")
+            where_conditions.append(""""ClassRoom"."CRtime" = %(CRtime_)s""")
             parameters["CRtime_"] = crtime
 
         

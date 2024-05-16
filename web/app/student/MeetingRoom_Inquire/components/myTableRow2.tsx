@@ -44,7 +44,6 @@ export default function MyTableRow2({ item, handleDate, handleCancel }: { item: 
                                 opacity: index <= currentBlock - 0.5 ? '0.5' : '1',
                             }}
                             onClick={(e) => {
-                                console.log(MRTimeArray)
                                 if (value === 'empty' && index >= currentBlock - 0.5) {
                                     for (let i = 0; i < MRTimeArray.length; i++) {
                                         if (MRTimeArray[i] === index + 1) {
@@ -58,6 +57,7 @@ export default function MyTableRow2({ item, handleDate, handleCancel }: { item: 
                                     let temp = [...MRTimeArray];
                                     temp[MRTimeArray.length] = index + 1;
                                     setMRTimeArray(temp);
+                                    console.log(temp)
                                 }
                             }}
                         >
