@@ -7,8 +7,22 @@ interface getScreditReq {
   }
 }
 
+interface getTcreditReq {
+  Keywords: {
+    Tno: string;
+  }
+}
+
 interface getScreditRes {
   Scredit: Array<{
+    Cname: string;
+    Cno: string;
+    Credit: string;
+  }>
+}
+
+interface getTcreditRes {
+  Tcredit: Array<{
     Cname: string;
     Cno: string;
     Credit: string;
@@ -197,7 +211,45 @@ const StudentServiceApi = {
     ),
 };
 
-const TeacherServiceApi = {};
+const TeacherServiceApi = {
+  getTcredit: async (Tno: string) =>
+    await instance.post<getTcreditReq, AxiosResponse<Partial<getTcreditRes>>>(
+      "/Tcredit_Inquire",
+      {
+        Keywords: {
+          Tno: Tno,
+        },
+      }
+    ),
+  getProject: async (Tno: string) =>
+    await instance.post<getTcreditReq, AxiosResponse<Partial<getProjectRes>>>(
+      "/Project_Inquire_T",
+      {
+        Keywords: {
+          Tno: Tno,
+        },
+      }
+    ),
+  getMeetingRoom: async (data: Partial<getMeetingRoomReq>) =>
+    await instance.post<getMeetingRoomReq, AxiosResponse<Partial<getMeetingRoomRes>>>(
+      "/MeetingRoom_Inquire",
+      data
+    ),
+  postMeetingRoom: async (data: Partial<postMeetingRoomReq>) =>
+    await instance.post<postMeetingRoomReq, AxiosResponse<Partial<postMeetingRoomRes>>>(
+      "/MeetingRoomS_Insert_T",
+      data
+    ),
+  getMyMeetingRoom: async (data: Partial<getMyMeetingRoomReq>) =>
+    await instance.post<getMyMeetingRoomReq, AxiosResponse<Partial<getMyMeetingRoomRes>>>(
+      "/My_MeetingRoom_Inquire",
+      data
+    ),
+  cancelMeetingRoom: async (data: Partial<cancelMeetingRoomReq>) =>
+    await instance.post<cancelMeetingRoomReq, AxiosResponse<Partial<cancelMeetingRoomRes>>>(
+      "/My_MeetingRoom_Delete_T",
+      data
+    ),};
 
 const AdminServiceApi = {};
 
