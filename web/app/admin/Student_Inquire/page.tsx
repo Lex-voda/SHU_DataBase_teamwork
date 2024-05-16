@@ -15,27 +15,25 @@ import useUserInfo from "../../hooks/useUserInfo";
 import API from "@/app/utils/api";
 import { error } from "@/app/utils/message";
 
-interface CourseType {
-    Cno: string;
-    Cname: string;
-    Credit: string;
-    Ctno: string;
-    Ctime: string;
-    Tname: string;
+interface StudentType {
+    Sno: string,
+    Sname: string,
+    Grade: string,
+    Sgender: string,
+    Cname: string
 }
 
 const columns = [
-    { name: "课程号", iid: "Cno" },
-    { name: "课程名称", iid: "Cname" },
-    { name: "学分", iid: "Credit" },
-    { name: "课程教师编号", iid: "Ctno" },
-    { name: "课程时间", iid: "Ctime" },
-    { name: "教师姓名", iid: "Tname" },
+    { name: "学号", iid: "Sno" },
+    { name: "学生姓名", iid: "Sname" },
+    { name: "年级", iid: "Grade" },
+    { name: "性别", iid: "Sgender" },
+    { name: "学院名称", iid: "Cname" },
 ];
 
 export default function App() {
     const userInfo = useUserInfo();
-    const [courses, setCourses] = useState<Array<CourseType>>([]);
+    const [courses, setCourses] = useState<Array<StudentType>>([]);
 
     const [page, setPage] = React.useState(1);
     const rowsPerPage = 8;
@@ -58,83 +56,98 @@ export default function App() {
 
     const handleSearch = () => {
         if (process.env.NEXT_PUBLIC_TEST === "test") {
-            setCourses([
-                {
-                    Cno: "16835001",
-                    Cname: "计算机组成原理",
-                    Credit: "4",
-                    Ctno: "10001",
-                    Ctime: "10001",
-                    Tname: "张三",
-                },
-                {
-                    Cno: "16835002",
-                    Cname: "操作系统",
-                    Credit: "4",
-                    Ctno: "10002",
-                    Ctime: "10002",
-                    Tname: "李四",
-                },
-                {
-                    Cno: "16835003",
-                    Cname: "数据结构",
-                    Credit: "4",
-                    Ctno: "10003",
-                    Ctime: "10003",
-                    Tname: "王五",
-                },
-                {
-                    Cno: "16835004",
-                    Cname: "计算机网络",
-                    Credit: "4",
-                    Ctno: "10004",
-                    Ctime: "10004",
-                    Tname: "赵六",
-                },
-                {
-                    Cno: "16835005",
-                    Cname: "数据库系统",
-                    Credit: "4",
-                    Ctno: "10005",
-                    Ctime: "10005",
-                    Tname: "孙七",
-                },
+            setCourses([{
+                Sno: "100001",
+                Sname: "peter",
+                Grade: "2018",
+                Sgender: "男",
+                Cname: "计算机学院",
+            },
+            {
+                Sno: "100002",
+                Sname: "lucy",
+                Grade: "2018",
+                Sgender: "女",
+                Cname: "计算机学院",
+            },
+            {
+                Sno: "100003",
+                Sname: "tom",
+                Grade: "2018",
+                Sgender: "男",
+                Cname: "计算机学院",
+            },
+            {
+                Sno: "100004",
+                Sname: "danny",
+                Grade: "2018",
+                Sgender: "男",
+                Cname: "计算机学院",
+            },
+            {
+                Sno: "100005",
+                Sname: "lily",
+                Grade: "2018",
+                Sgender: "女",
+                Cname: "计算机学院",
+            },
+            {
+                Sno: "100006",
+                Sname: "danny",
+                Grade: "2018",
+                Sgender: "男",
+                Cname: "计算机学院",
+            },
+            {
+                Sno: "100007",
+                Sname: "lucy",
+                Grade: "2018",
+                Sgender: "女",
+                Cname: "计算机学院",
+            },
+            {
+                Sno: "100008",
+                Sname: "tom",
+                Grade: "2018",
+                Sgender: "男",
+                Cname: "计算机学院",
+            },
             ]);
         } else {
             try {
-                API.StudentServiceApi.getCourse({
+                API.AdminServiceApi.getStudent({
                     Keywords: {
-                        Cno: cno,
-                        Cname: cname,
-                        Credit: credit,
-                        Ctno: ctno,
-                        Tname: tname,
-                        Ctime: ctime,
+                        Sno: cno,
+                        Sname: cname,
+                        Grade: credit,
+                        Sgender: ctno,
+                        Cono: tname,
+                        Cname: ctime,
                     }
                 })
                     .then((res) => {
                         console.log(res)
                         if (res.status === 200) {
-                            if (res.data.Course) setCourses(res.data.Course);
+                            if (res.data.Student) setCourses(res.data.Student);
                         }
                         else {
-                            error("获取课程信息失败！");
+                            error("获取学生信息失败！");
                         }
                     })
                     .catch((err: any) => {
-                        console.log("Get Course Error: ", err);
-                        error("Get Course Error: " + err);
+                        console.log("Get Student Error: ", err);
+                        error("Get Student Error: " + err);
                     });
             } catch (err: any) {
-                console.log("Get Course Error: ", err);
-                error("Get Course Error: " + err);
+                console.log("Get Student Error: ", err);
+                error("Get Student Error: " + err);
             }
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         handleSearch();
-    },[]);
+    }, []);
 
     const handleReset = () => {
         setCno("");
@@ -147,30 +160,30 @@ export default function App() {
 
     return (
         <div className="w-full h-screen flex flex-col gap-6 justify-center items-center px-28">
-            <div className="w-full text-start text-3xl font-bold">课程信息查询</div>
+            <div className="w-full text-start text-3xl font-bold">学生信息查询</div>
             <div className="flex flex-wrap gap-4 w-full">
                 <div className="flex gap-2 items-center">
-                    <div>课程编号</div>
+                    <div>学号</div>
                     <Input className="w-[70%]" type="text" onValueChange={setCno} value={cno} />
                 </div>
                 <div className="flex gap-2 items-center">
-                    <div>课程名称</div>
+                    <div>学生姓名</div>
                     <Input className="w-[70%]" type="text" onValueChange={setCname} value={cname} />
                 </div>
                 <div className="flex gap-2 items-center">
-                    <div>学分</div>
+                    <div>年级</div>
                     <Input className="w-[70%]" type="text" onValueChange={setCredit} value={credit} />
                 </div>
                 <div className="flex gap-2 items-center">
-                    <div>教师编号</div>
+                    <div>性别</div>
                     <Input className="w-[70%]" type="text" onValueChange={setCtno} value={ctno} />
                 </div>
                 <div className="flex gap-2 items-center">
-                    <div>教师姓名</div>
+                    <div>学院号</div>
                     <Input className="w-[70%]" type="text" onValueChange={setTname} value={tname} />
                 </div>
                 <div className="flex gap-2 items-center">
-                    <div>上课时间</div>
+                    <div>学院名称</div>
                     <Input className="w-[70%]" type="text" onValueChange={setCtime} value={ctime} />
                 </div>
             </div>
@@ -203,7 +216,7 @@ export default function App() {
                 </TableHeader>
                 <TableBody items={items} emptyContent={"暂无数据..."}>
                     {(item) => (
-                        <TableRow key={item.Cno}>
+                        <TableRow key={item.Sno}>
                             {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
                         </TableRow>
                     )}

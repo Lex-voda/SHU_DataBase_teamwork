@@ -24,11 +24,9 @@ const mainLayout = ({ children }: { children: React.ReactNode }) => {
     const userInfo = useUserInfo();
 
     const navItems: Array<{ name: string; href: string; }> = [
-        { name: "学分完成情况", href: '/student/Scredit_Inquire' },
-        { name: "课程信息查询", href: '/student/Course_Inquire' },
-        { name: "项目申报与查询", href: '/student/Project_Inquire' },
-        { name: "教室使用查询", href: '/student/ClassRoom_Inquire' },
-        { name: "会议室预约", href: '/student/MeetingRoom_Inquire' },
+        { name: "学生信息查询", href: '/admin/Student_Inquire' },
+        { name: "教师信息查询", href: '/admin/Teacher_Inquire' },
+        { name: "会议室管理", href: '/admin/MeetingRoom_Inquire' },
     ];
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -38,7 +36,7 @@ const mainLayout = ({ children }: { children: React.ReactNode }) => {
         if (process.env.NEXT_PUBLIC_TEST === "test") { return; }
         if (userInfo) {
             console.log(userInfo);
-            if (userInfo.status !== "S") {
+            if (userInfo.status !== "A") {
                 isLogin = false;
                 onOpen();
             }
