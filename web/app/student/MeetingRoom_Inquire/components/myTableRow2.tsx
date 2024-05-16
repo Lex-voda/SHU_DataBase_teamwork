@@ -39,7 +39,7 @@ export default function MyTableRow2({ item, handleDate, handleCancel }: { item: 
                             className="w-[8%] h-[20px] mx-1 rounded-md text-center "
                             key={index}
                             style={{
-                                backgroundColor: index <= currentBlock - 0.5 ? 'grey' : (value !== 'empty' || (MRTimeArray.indexOf(index + 1) != -1)) ? randomColor[index] : 'white',
+                                backgroundColor: index <= currentBlock - 0.5 ? 'grey' : (value !== 'empty' || (MRTimeArray.indexOf(index + 1) != -1)) ? randomColor[value === 'empty' ? 0 : (1 + (Number(value)) % 999)] : 'white',
                                 cursor: (value === 'empty' && index >= currentBlock - 0.5) ? "pointer" : "not-allowed",
                                 opacity: index <= currentBlock - 0.5 ? '0.5' : '1',
                             }}
