@@ -1,0 +1,282 @@
+@startuml
+
+actor 用户
+box "前端" #LightBlue
+participant "前端" as Frontend
+end box
+
+box "操作层" #LightYellow
+participant "操作层主控端" as OperationEnd
+
+participant "操作层数据库管理端" as OpDatabaseEnd
+end box
+
+box "数据库" #9E87CA
+database "数据库" as Database
+end box
+
+box "管理层" #Pink
+participant "管理层数据库管理端" as MgDatabaseEnd
+
+participant "管理层主控端" as ManagementEnd
+
+participant "配置文件管理器" as ConfigModule
+participant "资源文件管理器" as ResourceModule
+participant "策略文件管理器" as StrategyModule
+end box
+
+box "用户文件" #D9F2D0
+boundary "配置文件" as ConfigFile
+boundary "资源文件" as ResourceFile
+boundary "策略文件" as StrategyFile
+end box
+
+用户 -> Frontend: 访问平台
+
+opt 用户注册
+    用户 -> Frontend: 输入注册信息
+    Frontend -> OperationEnd: [POST]发送注册信息
+    OperationEnd -> OpDatabaseEnd: 调用数据库管理端
+    OpDatabaseEnd -> Database: 查询/修改注册信息
+    Database --> OpDatabaseEnd: 发送注册信息验证
+    OpDatabaseEnd --> OperationEnd: 返回注册信息验证
+    OperationEnd --> Frontend: 发送注册信息验证
+    note right: 201 (注册成功)\n401 (用户名已存在)\n500 (服务器错误)
+end
+
+用户 -> Frontend: 输入登录信息
+Frontend -> OperationEnd : [POST]发送登录信息
+OperationEnd -> OpDatabaseEnd: 调用数据库管理端
+OpDatabaseEnd -> Database: 查询登录信息
+Database --> OpDatabaseEnd: 发送登录信息验证
+OpDatabaseEnd --> OperationEnd: 返回登录信息验证
+OperationEnd --> Frontend: 发送登录信息验证
+note right: 200 (登录成功)\n401 (用户名或密码错误)\n500 (服务器错误)
+alt 登录成功
+    Frontend -> Frontend: 显示登录成功
+    opt 用户文件同步
+        Frontend -> OperationEnd: [GET]请求策略注册表
+        OperationEnd -> ManagementEnd: [GET]请求同步策略注册表
+        group 策略管理器同步
+            ManagementEnd -> StrategyModule: 调用策略管理模块
+            StrategyModule -> StrategyFile: 注册策略函数
+            StrategyModule --> ManagementEnd: 返回策略注册表
+        end
+        ManagementEnd --> OperationEnd: 发送策略注册表
+        note right: 200 (同步成功)\n501 (同步失败)
+        OperationEnd --> Frontend: 发送策略注册表
+        note right: 200 (同步成功)\n501 (同步失败)
+        Frontend -> OperationEnd: [GET]请求同步配置文件
+        OperationEnd -> ManagementEnd: [GET]请求同步配置文件
+        group 配置管理器同步
+            ManagementEnd -> MgDatabaseEnd: 调用数据库管理端
+            MgDatabaseEnd -> Database: 读取数据库
+            Database --> MgDatabaseEnd: 返回配置文件路径
+            MgDatabaseEnd --> ManagementEnd: 返回配置文件路径
+            ManagementEnd -> ConfigModule: 调用配置文件管理器
+            ConfigModule -> ConfigFile: 读取配置文件
+            ConfigModule --> ManagementEnd: 返回解析后的配置文件内容
+        end
+        ManagementEnd --> OperationEnd: 发送配置文件内容
+        note right: 200 (同步成功)\n501 (同步失败)
+        OperationEnd --> Frontend: 发送配置文件内容
+        note right: 200 (同步成功)\n501 (同步失败)
+        Frontend -> OperationEnd: [GET]请求同步资源文件
+        OperationEnd -> ManagementEnd: [GET]请求同步资源文件
+        group 资源管理器同步
+            ManagementEnd -> ResourceModule: 调用资源文件管理器
+            ResourceModule -> ResourceFile: 获取项目文件目录
+            ResourceModule --> ManagementEnd: 返回项目文件目录
+        end
+        ManagementEnd --> OperationEnd: 发送项目文件目录
+        note right: 200 (同步成功)\n501 (同步失败)
+        OperationEnd --> Frontend: 发送项目文件目录
+        note right: 200 (同步成功)\n501 (同步失败)
+
+        Frontend -> OperationEnd: [GET]请求项目列表
+        OperationEnd -> ManagementEnd: [GET]请求项目列表
+        ManagementEnd --> OperationEnd: 返回项目列表
+        note right: 200 (获取成功)\n501 (获取失败)
+        OperationEnd --> Frontend: 发送项目列表
+        note right: 200 (获取成功)\n501 (获取失败)
+
+    end
+    Frontend -> Frontend: 跳转首页
+    用户 -> Frontend: 选择项目
+    Frontend -> Frontend: 进入项目工作台
+    opt 恢复项目现场
+        Frontend -> OperationEnd: [GET]请求恢复项目现场
+        OperationEnd -> OpDatabaseEnd: 调用数据库管理端
+        OpDatabaseEnd -> Database: 查询项目现场信息
+        Database --> OpDatabaseEnd: 返回项目现场信息
+        OpDatabaseEnd --> OperationEnd: 返回项目现场信息
+        OperationEnd --> Frontend: 发送项目现场信息
+        note right: 200 (恢复成功)\n501 (恢复失败)
+    end
+    Frontend -> Frontend: 恢复系统现场
+    opt 用户修改配置文件路径
+        用户 -> Frontend: 选择配置文件路径
+        Frontend -> OperationEnd: [POST]发送配置文件路径
+        OperationEnd -> OpDatabaseEnd: 调用数据库管理端
+        OpDatabaseEnd -> Database: 写入数据库
+        OperationEnd -> ManagementEnd: [GET]请求同步配置文件
+
+        ManagementEnd -> MgDatabaseEnd: 调用数据库管理端
+        MgDatabaseEnd -> Database: 读取数据库
+        Database --> MgDatabaseEnd: 返回配置文件路径
+        MgDatabaseEnd --> ManagementEnd: 返回配置文件路径
+        ManagementEnd -> ConfigModule: 调用配置文件管理器
+        ConfigModule -> ConfigFile: 读取配置文件
+        ConfigModule --> ManagementEnd: 返回配置表单
+        ManagementEnd --> OperationEnd: 发送配置表单
+        note right: 200 (正确)\n404 (未找到文件) \n500 (错误)
+        OperationEnd --> Frontend: 发送配置表单
+        note right: 200 (正确)\n404 (未找到文件) \n500 (错误)
+    end
+    opt 用户修改配置
+        用户 -> Frontend: 修改配置表单
+        Frontend -> OperationEnd: [PATCH]发送修改后的配置表单
+        note right: 200 (正确)\n500 (错误)
+        OperationEnd -> ManagementEnd: [PATCH]发送修改后的配置表单
+        note right: 200 (正确)\n500 (错误)
+        ManagementEnd -> ConfigModule: 修改配置表单
+        alt 用户选择保存配置文件
+            ConfigModule -> ConfigFile: 创建新配置文件并写入
+        else 用户选择覆盖配置文件
+            ConfigModule -> ConfigFile: 写入修改后的配置文件
+        end
+    end
+    group 用户文件操作
+        opt 用户创建文件
+            note over Frontend
+                创建文件功能需要权限检查，权限不允许前端不开放创建功能
+            end note
+            用户 -> Frontend: 选择文件路径
+            Frontend -> OperationEnd: [POST]发送文件路径
+            note right: 200 (正确)\n500 (服务器错误)
+            OperationEnd -> ManagementEnd: [POST]发送文件路径
+            note right: 200 (正确)\n500 (服务器错误)
+            ManagementEnd -> ResourceModule: 调用资源文件管理器
+            alt 文件后缀是.py
+                ResourceModule -> StrategyFile: 创建策略文件
+            else 文件后缀是.json
+                ResourceModule -> ConfigFile: 创建配置文件
+            end
+        end
+        opt 用户重命名用户文件
+            note over Frontend
+                重命名文件功能需要权限检查，权限不允许前端不开放重命名功能
+            end note
+            用户 -> Frontend: 选择用户文件重命名
+            Frontend -> OperationEnd: [PUT]发送新旧用户文件路径
+            note right: 200 (正确)\n500 (服务器错误)
+            OperationEnd -> ManagementEnd: [PUT]发送新旧用户文件路径
+            note right: 200 (正确)\n500 (服务器错误)
+            ManagementEnd -> ResourceModule: 调用资源文件管理器
+            alt 文件后缀是.py
+                ResourceModule -> StrategyFile: 重命名策略文件
+            else 文件后缀是.json
+                ResourceModule -> ConfigFile: 重命名配置文件
+            end
+        end
+        opt 用户删除用户文件
+            note over Frontend
+                删除文件功能需要权限检查，权限不允许前端不开放删除功能
+            end note
+            用户 -> Frontend: 选择用户文件删除
+            Frontend -> OperationEnd: [DELETE]发送用户文件路径
+            note right: 200 (正确)\n500 (服务器错误)
+            OperationEnd -> ManagementEnd: [DELETE]发送用户文件路径
+            note right: 200 (正确)\n500 (服务器错误)
+            ManagementEnd -> ResourceModule: 调用资源文件管理器
+            alt 文件后缀是.py
+                ResourceModule -> StrategyFile: 删除策略文件
+            else 文件后缀是.json
+                ResourceModule -> ConfigFile: 删除配置文件
+            else 其他后缀
+                ResourceModule -> ResourceFile: 删除数据文件
+            end
+        end
+
+        opt 用户修改文件
+            note over Frontend
+                修改策略文件功能需要权限检查，权限不允许前端不开放修改功能
+            end note
+            用户 -> Frontend: 提交修改后的文件路径和内容
+            Frontend -> OperationEnd: [PATCH]发送修改后的文件路径和内容
+            note right: 200 (正确)\n501 (错误)\n500 (服务器错误)
+            OperationEnd -> ManagementEnd: [PATCH]发送修改后的文件路径和内容
+            note right: 200 (正确)\n501 (错误)\n500 (服务器错误)
+            ManagementEnd -> ResourceModule: 调用资源文件管理器
+            alt 文件后缀是.py
+                ResourceModule -> StrategyFile: 修改策略文件
+            else 文件后缀是.json
+                ResourceModule -> ConfigFile: 修改配置文件
+            end
+        end
+        note over Frontend
+            完成文件写操作后，前端需要请求同步
+        end note
+        opt 用户查看文件
+            用户 -> Frontend: 选择文件查看
+            Frontend -> OperationEnd: [GET]发送文件路径
+            OperationEnd -> ManagementEnd: [GET]发送文件路径
+            ManagementEnd -> ResourceModule: 调用资源文件管理器
+            alt 文件后缀是.py
+                ResourceModule -> StrategyFile: 读取策略文件
+            else 文件后缀是.json
+                ResourceModule -> ConfigFile: 读取配置文件
+            end
+            ResourceModule --> ManagementEnd: 返回文件内容
+            ManagementEnd --> OperationEnd: 发送文件内容
+            note right: 200 (确认)\n404 (文件不存在)\n500 (服务器错误)
+            OperationEnd --> Frontend: 发送文件内容
+            note right: 200 (确认)\n404 (文件不存在)\n500 (服务器错误)
+            Frontend -> Frontend: 显示文件内容
+        end
+    end
+    group 基于websockt连接环境的操作
+        opt 执行任务
+            用户 -> Frontend: 配置任务
+            Frontend ->> OperationEnd: [POST]发送任务信息
+            OperationEnd ->> ManagementEnd: [POST]发送任务信息
+            ManagementEnd -> StrategyModule: 调用策略管理器
+            StrategyModule --> ManagementEnd: 返回策略结果
+            ManagementEnd --> OperationEnd: 发送任务结果
+            note right: 200 (正确)\n500 (错误)
+            OperationEnd --> Frontend: 发送任务结果
+            note right: 200 (正确)\n500 (错误)
+        end
+        opt 停止正在运行的任务或删除等待运行的任务
+            用户 -> Frontend: 选择停止任务
+            Frontend ->> OperationEnd: [GET]发送任务名
+            OperationEnd ->> ManagementEnd: [GET]发送任务名
+            ManagementEnd -> StrategyModule: 调用策略管理器
+            StrategyModule --> ManagementEnd: 返回执行结果
+            ManagementEnd --> OperationEnd: 发送执行结果
+            note right: 200 (正确)\n500 (错误)
+            OperationEnd --> Frontend: 发送执行结果
+            note right: 200 (正确)\n500 (错误)
+        end
+        group 修改任务状态
+            StrategyModule --> ManagementEnd: 任务完成返回
+            ManagementEnd --> OperationEnd: 修改任务状态
+            OperationEnd --> Frontend: 修改任务状态
+        end
+        opt 监测用户机系统信息
+            Frontend ->> OperationEnd: [GET]在socketweb环境中请求监控信息
+            OperationEnd ->> ManagementEnd: [GET]在socketweb环境中请求监控信息
+            ManagementEnd --> OperationEnd: 返回监控信息
+            OperationEnd --> Frontend: 发送监控信息
+        end
+        用户 -> Frontend: 退出项目工作台
+        Frontend -> OperationEnd: [POST]发送现场信息，请求保存现场
+        note right: 200 (确认)\n500 (错误)
+        OperationEnd -> OpDatabaseEnd: 调用数据库管理端
+        OpDatabaseEnd -> Database: 写入现场信息
+    end
+else 登录失败
+    Frontend -> Frontend: 显示登录失败
+end
+
+@enduml
